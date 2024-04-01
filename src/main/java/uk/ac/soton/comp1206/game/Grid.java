@@ -2,6 +2,9 @@ package uk.ac.soton.comp1206.game;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import uk.ac.soton.comp1206.component.GameBoard;
 
 /**
  * The Grid is a model which holds the state of a game board. It is made up of a set of Integer values arranged in a 2D
@@ -15,6 +18,7 @@ import javafx.beans.property.SimpleIntegerProperty;
  * The Grid should be linked to a GameBoard for it's display.
  */
 public class Grid {
+    private static final Logger logger = LogManager.getLogger(Grid.class);
 
     /**
      * The number of columns in this grid
@@ -103,4 +107,39 @@ public class Grid {
         return rows;
     }
 
+    public boolean canPlayPiece(GamePiece piece, int x, int y) {
+        logger.info("Checking if piece can be played");
+
+        int xOffset = 1;
+        int yOffset = 1;
+        int relativeX = x - xOffset;
+        int relativeY = y - yOffset;
+
+        for (int i = 0; i < 3; i++) { // Columns
+            for (int j = 0; j < 3; j++) { // Rows
+                if ((piece.getBlocks()[i][j] > 0) && (grid[i+relativeX][j+relativeY].get() > 1)) return false;
+            }
+        }
+
+        return true;
+    }
+
+    public void playPiece(GamePiece piece, int x, int y) {
+        if (canPlayPiece(piece, x, y)) {
+            int xOffset = 1;
+            int yOffset = 1;
+            int relativeX = x - xOffset;
+            int relativeY = y - yOffset;
+
+            for (int i = 0; i < 3; i++) { // Columns
+                for (int j = 0; j < 3; j++) { // Rows
+                    if (piece.getBlocks()[i][j] > 0) {
+                        set(i + relativeX, j + relativeY, piece.getValue());
+                    }
+                }
+            }
+
+            logger.info("Played {}:{}", piece, piece.toString());
+        }
+    }
 }
