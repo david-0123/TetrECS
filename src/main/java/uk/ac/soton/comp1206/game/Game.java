@@ -1,9 +1,11 @@
 package uk.ac.soton.comp1206.game;
 
+import java.util.HashSet;
 import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.component.GameBlock;
+import uk.ac.soton.comp1206.component.GameBlockCoordinate;
 
 /**
  * The Game class handles the main logic, state and properties of the TetrECS game. Methods to manipulate the game state
@@ -30,6 +32,8 @@ public class Game {
 
     private static GamePiece currentPiece;
 
+    private HashSet<GameBlockCoordinate> blocksToClear;
+
     /**
      * Create a new game with the specified rows and columns. Creates a corresponding grid model.
      * @param cols number of columns
@@ -41,9 +45,6 @@ public class Game {
 
         //Create a new grid model to represent the game state
         this.grid = new Grid(cols,rows);
-
-        logger.info("Initialising first piece");
-        currentPiece = spawnPiece();
     }
 
     /**
@@ -59,6 +60,8 @@ public class Game {
      */
     public void initialiseGame() {
         logger.info("Initialising game");
+        logger.info("Initialising first piece");
+        currentPiece = spawnPiece();
     }
 
     /**
@@ -71,6 +74,7 @@ public class Game {
         int y = gameBlock.getY();
 
         grid.playPiece(currentPiece, x, y);
+        afterPiece();
     }
 
     /**
@@ -106,5 +110,57 @@ public class Game {
     public static void nextPiece() {
         logger.info("Getting new piece");
         currentPiece = spawnPiece();
+    }
+
+    public void afterPiece() {
+        logger.info("Checking for lines to clear");
+        int linesToClear = 0;
+        blocksToClear = new HashSet<>();
+
+        //Iterate through rows
+        for (int i = 0; i < rows; i++) {
+            int count = 0;
+            for (int j = 0; j < cols; j++) {
+                if (grid.get(j,i) >= 1) count++;
+            }
+
+            //If line is full...
+            if (count == cols) {
+                logger.info("Clearing rows...");
+                linesToClear++;
+                for (int j = 0; j < cols; j++) {
+                    GameBlockCoordinate blockCoordinate = new GameBlockCoordinate(j,i);
+                    blocksToClear.add(blockCoordinate);
+                    logger.info("{} will be cleared", blockCoordinate.toString());
+                }
+            }
+        }
+
+        //Iterate through columns
+        for (int i = 0; i < rows; i++) {
+            int count = 0;
+            for (int j = 0; j < cols; j++) {
+                if (grid.get(i,j) >= 1) count++;
+            }
+
+            //If line is full...
+            if (count == cols) {
+                logger.info("Clearing columns...");
+                linesToClear++;
+                for (int j = 0; j < cols; j++) {
+                    GameBlockCoordinate blockCoordinate = new GameBlockCoordinate(i,j);
+                    blocksToClear.add(blockCoordinate);
+                    logger.info("{} will be cleared", blockCoordinate.toString());
+                }
+            }
+        }
+
+        try {
+            for (GameBlockCoordinate blockCoordinate : blocksToClear) {
+                System.out.println(blockCoordinate);
+            }
+        } catch (NullPointerException e) {
+
+        }
     }
 }
