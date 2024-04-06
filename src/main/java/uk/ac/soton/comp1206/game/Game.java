@@ -30,9 +30,10 @@ public class Game {
      */
     protected final Grid grid;
 
+    /**
+     * The current game piece the user has to place
+     */
     private static GamePiece currentPiece;
-
-    private HashSet<GameBlockCoordinate> blocksToClear;
 
     /**
      * Create a new game with the specified rows and columns. Creates a corresponding grid model.
@@ -101,21 +102,31 @@ public class Game {
         return rows;
     }
 
+    /**
+     * Creates a random game piece
+     * @return the created game piece
+     */
     public static GamePiece spawnPiece() {
         int rnd = new Random().nextInt(GamePiece.PIECES);
-        logger.info("Created {} piece", GamePiece.createPiece(rnd).toString());
+        logger.info("Created {} piece", GamePiece.createPiece(rnd));
         return GamePiece.createPiece(rnd);
     }
 
+    /**
+     * Gets the next game piece the user has to place
+     */
     public static void nextPiece() {
         logger.info("Getting new piece");
         currentPiece = spawnPiece();
     }
 
+    /**
+     * Handle the logic to clear any lines after a piece is played
+     */
     public void afterPiece() {
         logger.info("Checking for lines to clear");
         int linesToClear = 0;
-        blocksToClear = new HashSet<>();
+        HashSet<GameBlockCoordinate> blocksToClear = new HashSet<>();
 
         //Iterate through rows
         for (int i = 0; i < rows; i++) {
@@ -131,7 +142,7 @@ public class Game {
                 for (int j = 0; j < cols; j++) {
                     GameBlockCoordinate blockCoordinate = new GameBlockCoordinate(j,i);
                     blocksToClear.add(blockCoordinate);
-                    logger.info("{} will be cleared", blockCoordinate.toString());
+                    logger.info("{} will be cleared", blockCoordinate);
                 }
             }
         }
@@ -150,17 +161,16 @@ public class Game {
                 for (int j = 0; j < cols; j++) {
                     GameBlockCoordinate blockCoordinate = new GameBlockCoordinate(i,j);
                     blocksToClear.add(blockCoordinate);
-                    logger.info("{} will be cleared", blockCoordinate.toString());
+                    logger.info("{} will be cleared", blockCoordinate);
                 }
             }
         }
 
         try {
             for (GameBlockCoordinate blockCoordinate : blocksToClear) {
-                System.out.println(blockCoordinate);
+                grid.set(blockCoordinate.getX(), blockCoordinate.getY(), 0);
             }
-        } catch (NullPointerException e) {
-
-        }
+            logger.info("{} lines cleared", linesToClear);
+        } catch (NullPointerException ignored) {}
     }
 }

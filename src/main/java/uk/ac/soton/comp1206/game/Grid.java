@@ -107,6 +107,13 @@ public class Grid {
         return rows;
     }
 
+    /**
+     * Checks if the center of a piece can be played where the user clicks
+     * @param piece the game piece to be played
+     * @param x the x coordinate of the piece's destination on the grid
+     * @param y the y coordinate of the piece's destination on the grid
+     * @return true if the piece can be played in the specified position
+     */
     public boolean canPlayPiece(GamePiece piece, int x, int y) {
         logger.info("Checking if piece can be played");
 
@@ -126,10 +133,15 @@ public class Grid {
                 }
             }
         }
-
         return true;
     }
 
+    /**
+     * Plays the current piece in the specified position if possible
+     * @param piece the game piece to be played
+     * @param x the x coordinate on the grid
+     * @param y the y coordinate on the grid
+     */
     public void playPiece(GamePiece piece, int x, int y) {
         if (canPlayPiece(piece, x, y)) {
             int xOffset = 1;
