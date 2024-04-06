@@ -1,5 +1,6 @@
 package uk.ac.soton.comp1206.game;
 
+import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.component.GameBlock;
@@ -27,6 +28,8 @@ public class Game {
      */
     protected final Grid grid;
 
+    private static GamePiece currentPiece;
+
     /**
      * Create a new game with the specified rows and columns. Creates a corresponding grid model.
      * @param cols number of columns
@@ -38,6 +41,9 @@ public class Game {
 
         //Create a new grid model to represent the game state
         this.grid = new Grid(cols,rows);
+
+        logger.info("Initialising first piece");
+        currentPiece = spawnPiece();
     }
 
     /**
@@ -64,15 +70,7 @@ public class Game {
         int x = gameBlock.getX();
         int y = gameBlock.getY();
 
-        //Get the new value for this block
-        int previousValue = grid.get(x,y);
-        int newValue = previousValue + 1;
-        if (newValue  > GamePiece.PIECES) {
-            newValue = 0;
-        }
-
-        //Update the grid with the new value
-        grid.set(x,y,newValue);
+        grid.playPiece(currentPiece, x, y);
     }
 
     /**
@@ -99,5 +97,14 @@ public class Game {
         return rows;
     }
 
+    public static GamePiece spawnPiece() {
+        int rnd = new Random().nextInt(GamePiece.PIECES);
+        logger.info("Created {} piece", GamePiece.createPiece(rnd).toString());
+        return GamePiece.createPiece(rnd);
+    }
 
+    public static void nextPiece() {
+        logger.info("Getting new piece");
+        currentPiece = spawnPiece();
+    }
 }

@@ -145,7 +145,8 @@ public class Grid {
                 }
             }
 
-            logger.info("Played {}: {}", piece, piece.toString());
+            logger.info("Played {}", piece);
+            Game.nextPiece();
         }
     }
 }
