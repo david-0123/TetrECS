@@ -117,7 +117,13 @@ public class Grid {
 
         for (int i = 0; i < 3; i++) { // Columns
             for (int j = 0; j < 3; j++) { // Rows
-                if ((piece.getBlocks()[i][j] > 0) && (grid[i+relativeX][j+relativeY].get() > 1)) return false;
+                if (piece.getBlocks()[i][j] > 0) {
+                    try {
+                        if (grid[i+relativeX][j+relativeY].get() > 1) return false;
+                    } catch (IndexOutOfBoundsException e) {
+                        return false;
+                    }
+                }
             }
         }
 
@@ -139,7 +145,7 @@ public class Grid {
                 }
             }
 
-            logger.info("Played {}:{}", piece, piece.toString());
+            logger.info("Played {}: {}", piece, piece.toString());
         }
     }
 }
