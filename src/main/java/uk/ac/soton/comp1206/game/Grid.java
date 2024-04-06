@@ -119,7 +119,7 @@ public class Grid {
             for (int j = 0; j < 3; j++) { // Rows
                 if (piece.getBlocks()[i][j] > 0) {
                     try {
-                        if (grid[i+relativeX][j+relativeY].get() > 1) return false;
+                        if (grid[i+relativeX][j+relativeY].get() >= 1) return false;
                     } catch (IndexOutOfBoundsException e) {
                         return false;
                     }
