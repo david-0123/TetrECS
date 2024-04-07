@@ -188,6 +188,24 @@ public class Game {
             }
             logger.info("{} lines cleared", linesToClear);
         } catch (NullPointerException ignored) {}
+
+        score(linesToClear, blocksToClear.size());
+        multiplier(linesToClear);
+        level();
+    }
+
+    /**
+     * Calculates the player's score
+     * @param lines the number of lines cleared by the piece
+     * @param blocks the number of blocks cleared
+     */
+    public void score(int lines, int blocks) {
+        int score = lines * blocks * 10 * getMultiplier();
+        setScore(getScore() + score);
+    }
+
+    public void setScore(int score) {
+        this.score.set(score);
     }
 
     public int getScore() {
@@ -198,20 +216,39 @@ public class Game {
         return score;
     }
 
-    public int getLevel() {
-        return level.get();
+    /**
+     * Calculates the user's current level
+     */
+    public void level() {
+        setLevel(getScore() / 1000);
+    }
+
+    public void setLevel(int level) {
+        this.level.set(level);
     }
 
     public IntegerProperty levelProperty() {
         return level;
     }
 
-    public int getLives() {
-        return lives.get();
-    }
-
     public IntegerProperty livesProperty() {
         return lives;
+    }
+
+    /**
+     * Calculates the current multiplier after a piece is played/expires
+     * @param linesCleared
+     */
+    public void multiplier(int linesCleared) {
+        if (linesCleared >= 1) {
+            setMultiplier(getMultiplier() + 1);
+        } else {
+            setMultiplier(1);
+        }
+    }
+
+    public void setMultiplier(int multiplier) {
+        this.multiplier.set(multiplier);
     }
 
     public int getMultiplier() {
