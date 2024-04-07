@@ -1,5 +1,6 @@
 package uk.ac.soton.comp1206.scene;
 
+import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,6 +49,25 @@ public class ChallengeScene extends BaseScene {
 
         var board = new GameBoard(game.getGrid(),gameWindow.getWidth()/2,gameWindow.getWidth()/2);
         mainPane.setCenter(board);
+        
+        var stats = new VBox();
+        stats.setFillWidth(true);
+
+        var scoreLabel = new Label();
+        scoreLabel.textProperty().bind(game.scoreProperty().asString("Score: %d"));
+
+        var levelLabel = new Label();
+        levelLabel.textProperty().bind(game.levelProperty().asString("Level: %d"));
+
+        var livesLabel = new Label();
+        livesLabel.textProperty().bind(game.livesProperty().asString("Lives Remaining: %d"));
+
+        var multiplierLabel = new Label();
+        multiplierLabel.textProperty().bind(game.multiplierProperty().asString("Multiplier: %dx"));
+
+        stats.getChildren().addAll(scoreLabel, levelLabel, livesLabel, multiplierLabel);
+
+        mainPane.setRight(stats);
 
         //Handle block on gameboard grid being clicked
         board.setOnBlockClick(this::blockClicked);

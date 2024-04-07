@@ -2,6 +2,8 @@ package uk.ac.soton.comp1206.game;
 
 import java.util.HashSet;
 import java.util.Random;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.component.GameBlock;
@@ -35,6 +37,14 @@ public class Game {
      */
     private static GamePiece currentPiece;
 
+    private IntegerProperty score;
+
+    private IntegerProperty level;
+
+    private IntegerProperty lives;
+
+    private IntegerProperty multiplier;
+
     /**
      * Create a new game with the specified rows and columns. Creates a corresponding grid model.
      * @param cols number of columns
@@ -46,6 +56,12 @@ public class Game {
 
         //Create a new grid model to represent the game state
         this.grid = new Grid(cols,rows);
+
+        score = new SimpleIntegerProperty(0);
+        level = new SimpleIntegerProperty(0);
+        lives = new SimpleIntegerProperty(3);
+        multiplier = new SimpleIntegerProperty(1);
+
     }
 
     /**
@@ -172,5 +188,37 @@ public class Game {
             }
             logger.info("{} lines cleared", linesToClear);
         } catch (NullPointerException ignored) {}
+    }
+
+    public int getScore() {
+        return score.get();
+    }
+
+    public IntegerProperty scoreProperty() {
+        return score;
+    }
+
+    public int getLevel() {
+        return level.get();
+    }
+
+    public IntegerProperty levelProperty() {
+        return level;
+    }
+
+    public int getLives() {
+        return lives.get();
+    }
+
+    public IntegerProperty livesProperty() {
+        return lives;
+    }
+
+    public int getMultiplier() {
+        return multiplier.get();
+    }
+
+    public IntegerProperty multiplierProperty() {
+        return multiplier;
     }
 }
