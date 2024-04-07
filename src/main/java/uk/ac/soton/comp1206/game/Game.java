@@ -90,8 +90,8 @@ public class Game {
         int x = gameBlock.getX();
         int y = gameBlock.getY();
 
-        grid.playPiece(currentPiece, x, y);
-        afterPiece();
+        boolean piecePlayed = grid.playPiece(currentPiece, x, y);
+        afterPiece(piecePlayed);
     }
 
     /**
@@ -139,7 +139,7 @@ public class Game {
     /**
      * Handle the logic to clear any lines after a piece is played
      */
-    public void afterPiece() {
+    public void afterPiece(boolean piecePlayed) {
         logger.info("Checking for lines to clear");
         int linesToClear = 0;
         HashSet<GameBlockCoordinate> blocksToClear = new HashSet<>();
@@ -190,7 +190,7 @@ public class Game {
         } catch (NullPointerException ignored) {}
 
         score(linesToClear, blocksToClear.size());
-        multiplier(linesToClear);
+        if (piecePlayed) multiplier(linesToClear); // Only changes/resets multiplier when a piece is played
         level();
     }
 
@@ -237,7 +237,7 @@ public class Game {
 
     /**
      * Calculates the current multiplier after a piece is played/expires
-     * @param linesCleared
+     * @param linesCleared the number of lines cleared by a piece
      */
     public void multiplier(int linesCleared) {
         if (linesCleared >= 1) {

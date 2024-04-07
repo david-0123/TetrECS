@@ -142,7 +142,7 @@ public class Grid {
      * @param x the x coordinate on the grid
      * @param y the y coordinate on the grid
      */
-    public void playPiece(GamePiece piece, int x, int y) {
+    public boolean playPiece(GamePiece piece, int x, int y) {
         if (canPlayPiece(piece, x, y)) {
             int xOffset = 1;
             int yOffset = 1;
@@ -159,6 +159,9 @@ public class Grid {
 
             logger.info("Played {}", piece);
             Game.nextPiece();
+            return true;
         }
+
+        return false;
     }
 }
