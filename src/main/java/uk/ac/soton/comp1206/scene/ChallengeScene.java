@@ -99,9 +99,16 @@ public class ChallengeScene extends BaseScene {
         levelNumber.getStyleClass().add("level");
         levelBox.getChildren().addAll(levelHeading,levelNumber);
 
-        var nextPiece = new PieceBoard(3,3, gameWindow.getWidth()/4, gameWindow.getHeight()/3);
+        var pieceBox = new VBox();
+        pieceBox.setAlignment(Pos.CENTER);
+        pieceBox.setSpacing(10);
+        var upcomingHeader = new Text("Upcoming");
+        upcomingHeader.getStyleClass().add("heading");
+        var currentPiece = new PieceBoard(3,3, gameWindow.getWidth()/6, gameWindow.getHeight()/5);
+        var nextPiece = new PieceBoard(3,3, gameWindow.getWidth()/7, gameWindow.getHeight()/6);
+        pieceBox.getChildren().addAll(upcomingHeader,currentPiece,nextPiece);
 
-        infoPane.getChildren().addAll(hiScoreBox,levelBox, nextPiece);
+        infoPane.getChildren().addAll(hiScoreBox,levelBox, pieceBox);
 
         var title = new Text("Challenge Mode");
         title.getStyleClass().add("title");
