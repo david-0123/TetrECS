@@ -80,6 +80,7 @@ public class MenuScene extends BaseScene {
         rotateLogo(tetrecs);
 
         single.setOnMouseClicked(this::startGame);
+        instruct.setOnMouseClicked(this::showInstructions);
         exit.setOnMouseClicked(this::exitGame);
     }
 
@@ -105,6 +106,14 @@ public class MenuScene extends BaseScene {
      */
     private void exitGame(MouseEvent event) {
         App.getInstance().shutdown();
+    }
+
+    /**
+     * Handles when the How to Play button is pressed
+     * @param event event
+     */
+    private void showInstructions(MouseEvent event) {
+        gameWindow.instructions();
     }
 
     /**
