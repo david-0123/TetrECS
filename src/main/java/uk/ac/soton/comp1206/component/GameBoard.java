@@ -24,12 +24,12 @@ public class GameBoard extends GridPane {
     /**
      * Number of columns in the board
      */
-    private final int cols;
+    protected final int cols;
 
     /**
      * Number of rows in the board
      */
-    private final int rows;
+    protected final int rows;
 
     /**
      * The visual width of the board - has to be specified due to being a Canvas

@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.component.GameBlock;
 import uk.ac.soton.comp1206.component.GameBoard;
+import uk.ac.soton.comp1206.component.PieceBoard;
 import uk.ac.soton.comp1206.game.Game;
 import uk.ac.soton.comp1206.game.Multimedia;
 import uk.ac.soton.comp1206.ui.GamePane;
@@ -79,6 +80,7 @@ public class ChallengeScene extends BaseScene {
         var infoPane = new VBox();
         infoPane.setAlignment(Pos.CENTER);
         infoPane.setPadding(new Insets(0,10,0,0)); //Adds a right margin
+        infoPane.setSpacing(10);
 
         var hiScoreBox = new VBox();
         hiScoreBox.setAlignment(Pos.CENTER);
@@ -97,7 +99,9 @@ public class ChallengeScene extends BaseScene {
         levelNumber.getStyleClass().add("level");
         levelBox.getChildren().addAll(levelHeading,levelNumber);
 
-        infoPane.getChildren().addAll(hiScoreBox,levelBox);
+        var nextPiece = new PieceBoard(3,3, gameWindow.getWidth()/4, gameWindow.getHeight()/3);
+
+        infoPane.getChildren().addAll(hiScoreBox,levelBox, nextPiece);
 
         var title = new Text("Challenge Mode");
         title.getStyleClass().add("title");
@@ -105,6 +109,7 @@ public class ChallengeScene extends BaseScene {
         var topRow = new HBox(scoreBox,title,livesBox);
         topRow.setAlignment(Pos.CENTER);
         topRow.setSpacing(150);
+        topRow.setPadding(new Insets(10,0,0,0));
 
         mainPane.setTop(topRow);
         mainPane.setRight(infoPane);

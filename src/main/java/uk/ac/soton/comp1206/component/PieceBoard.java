@@ -1,0 +1,25 @@
+package uk.ac.soton.comp1206.component;
+
+import uk.ac.soton.comp1206.game.GamePiece;
+import uk.ac.soton.comp1206.game.Grid;
+
+public class PieceBoard extends GameBoard {
+
+    public PieceBoard(Grid grid, double width, double height) {
+      super(grid, width, height);
+    }
+
+    public PieceBoard(int cols, int rows, double width, double height) {
+      super(cols, rows, width, height);
+    }
+
+    public void displayPiece(GamePiece piece) {
+      for (int x = 0; x < cols; x++) {
+        for (int y = 0; y < rows; y++) {
+          if (piece.getBlocks()[x][y] >= 1) {
+            grid.set(x, y, piece.getValue());
+          }
+        }
+       }
+    }
+}
