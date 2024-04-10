@@ -1,11 +1,18 @@
 package uk.ac.soton.comp1206.scene;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
+import javafx.animation.Animation;
+import javafx.animation.RotateTransition;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.ac.soton.comp1206.App;
 import uk.ac.soton.comp1206.game.Multimedia;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
@@ -44,20 +51,36 @@ public class MenuScene extends BaseScene {
         var mainPane = new BorderPane();
         menuPane.getChildren().add(mainPane);
 
-        //Awful title
-        var title = new Text("TetrECS");
-        title.getStyleClass().add("title");
-        mainPane.setTop(title);
+        var menuItems = new VBox();
+        menuItems.setAlignment(Pos.BOTTOM_CENTER);
+        menuItems.getStyleClass().add("menu");
+        
+        var tetrecs = new ImageView(new Image(this.getClass().getResource("/images/TetrECS.png").toExternalForm()));
+        tetrecs.setPreserveRatio(true);
+        tetrecs.setFitWidth(600);
+        tetrecs.setRotate(-10);
 
-        //For now, let us just add a button that starts the game. I'm sure you'll do something way better.
-        var button = new Button("Play");
-        mainPane.setCenter(button);
+        var spacer = new Region();
+        spacer.setPrefHeight(150);
 
-        //Bind the button action to the startGame method in the menu
-        button.setOnAction(this::startGame);
+        var single = new Text("Single Player");
+        var multi = new Text("Multi Player");
+        var instruct = new Text("How to Play");
+        var exit = new Text("Exit");
+        single.getStyleClass().add("menuItem");
+        multi.getStyleClass().add("menuItem");
+        instruct.getStyleClass().add("menuItem");
+        exit.getStyleClass().add("menuItem");
 
-        //Continuous loop of background menu music
+        menuItems.getChildren().addAll(tetrecs,spacer,single,multi,instruct,exit);
+
+        mainPane.setCenter(menuItems);
+
         Multimedia.playMusic("menu.mp3", true);
+        rotateLogo(tetrecs);
+
+        single.setOnMouseClicked(this::startGame);
+        exit.setOnMouseClicked(this::exitGame);
     }
 
     /**
@@ -72,8 +95,28 @@ public class MenuScene extends BaseScene {
      * Handle when the Start Game button is pressed
      * @param event event
      */
-    private void startGame(ActionEvent event) {
+    private void startGame(MouseEvent event) {
         gameWindow.startChallenge();
+    }
+
+    /**
+     * Handle when the Exit text object is pressed
+     * @param event event
+     */
+    private void exitGame(MouseEvent event) {
+        App.getInstance().shutdown();
+    }
+
+    /**
+     * Plays an animation that continuously rotates the given node
+     * @param node node to be rotated
+     */
+    public void rotateLogo(Node node) {
+        RotateTransition rt = new RotateTransition(Duration.seconds(2), node);
+        rt.setByAngle(20);
+        rt.setCycleCount(Animation.INDEFINITE);
+        rt.setAutoReverse(true);
+        rt.play();
     }
 
 }
