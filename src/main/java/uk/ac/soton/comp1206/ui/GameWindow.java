@@ -137,6 +137,13 @@ public class GameWindow {
     }
 
     /**
+     * Quit the game
+     */
+    public void exit() {
+        App.getInstance().shutdown();
+    }
+
+    /**
      * Get the current scene being displayed
      * @return scene
      */

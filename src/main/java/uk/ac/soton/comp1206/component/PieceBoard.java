@@ -18,7 +18,6 @@ public class PieceBoard extends GameBoard {
     }
 
     public void displayPiece(GamePiece piece) {
-      logger.info("Displaying current piece...");
       for (int x = 0; x < cols; x++) {
         for (int y = 0; y < rows; y++) {
           if (piece.getBlocks()[x][y] >= 1) {

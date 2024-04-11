@@ -25,10 +25,9 @@ public class InstructionsScene extends BaseScene {
      */
     public InstructionsScene(GameWindow gameWindow) {
       super(gameWindow);
+      setSceneName("Instructions");
       logger.info("Creating Instructions Scene");
     }
-
-    public void initialise() {}
 
     public void build() {
         logger.info("Building " + this.getClass().getName());

@@ -1,7 +1,10 @@
 package uk.ac.soton.comp1206.scene;
 
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
 
@@ -9,11 +12,13 @@ import uk.ac.soton.comp1206.ui.GameWindow;
  * A Base Scene used in the game. Handles common functionality between all scenes.
  */
 public abstract class BaseScene {
+    private static final Logger logger = LogManager.getLogger(GameWindow.class);
 
     protected final GameWindow gameWindow;
 
     protected GamePane root;
     protected Scene scene;
+    protected String sceneName;
 
     /**
      * Create a new scene, passing in the GameWindow the scene will be displayed in
@@ -26,7 +31,20 @@ public abstract class BaseScene {
     /**
      * Initialise this scene. Called after creation
      */
-    public abstract void initialise();
+    public void initialise() {
+        scene.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ESCAPE) {
+                logger.info("Escape key pressed");
+                if (getSceneName().equalsIgnoreCase("Menu")) {
+                    logger.info("Shutting down");
+                    gameWindow.exit();
+                } else {
+                    logger.info("Going back to the menu");
+                    gameWindow.startMenu();
+                }
+            }
+        });
+    }
 
     /**
      * Build the layout of the scene
@@ -53,4 +71,19 @@ public abstract class BaseScene {
         return this.scene;
     }
 
+    /**
+     * Set the name of the current scene
+     * @param name scene name
+     */
+    public void setSceneName(String name) {
+        sceneName = name;
+    }
+
+    /**
+     * Get the name of the current scene
+     * @return scene name
+     */
+    public String getSceneName() {
+        return sceneName;
+    }
 }

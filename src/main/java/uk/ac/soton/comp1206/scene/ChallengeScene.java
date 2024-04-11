@@ -28,6 +28,7 @@ public class ChallengeScene extends BaseScene {
      */
     public ChallengeScene(GameWindow gameWindow) {
         super(gameWindow);
+        setSceneName("Challenge");
         logger.info("Creating Challenge Scene");
     }
 
@@ -149,10 +150,9 @@ public class ChallengeScene extends BaseScene {
     /**
      * Initialise the scene and start the game
      */
-    @Override
     public void initialise() {
+        super.initialise();
         logger.info("Initialising Challenge");
         game.start();
     }
-
 }

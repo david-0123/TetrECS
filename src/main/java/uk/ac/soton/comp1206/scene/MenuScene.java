@@ -12,7 +12,6 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import uk.ac.soton.comp1206.App;
 import uk.ac.soton.comp1206.game.Multimedia;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
@@ -30,6 +29,7 @@ public class MenuScene extends BaseScene {
      */
     public MenuScene(GameWindow gameWindow) {
         super(gameWindow);
+        setSceneName("Menu");
         logger.info("Creating Menu Scene");
     }
 
@@ -85,14 +85,6 @@ public class MenuScene extends BaseScene {
     }
 
     /**
-     * Initialise the menu
-     */
-    @Override
-    public void initialise() {
-
-    }
-
-    /**
      * Handle when the Start Game button is pressed
      * @param event event
      */
@@ -105,7 +97,7 @@ public class MenuScene extends BaseScene {
      * @param event event
      */
     private void exitGame(MouseEvent event) {
-        App.getInstance().shutdown();
+        gameWindow.exit();
     }
 
     /**
