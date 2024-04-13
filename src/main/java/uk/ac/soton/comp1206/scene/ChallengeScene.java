@@ -10,6 +10,7 @@ import uk.ac.soton.comp1206.component.GameBlock;
 import uk.ac.soton.comp1206.component.GameBoard;
 import uk.ac.soton.comp1206.component.PieceBoard;
 import uk.ac.soton.comp1206.game.Game;
+import uk.ac.soton.comp1206.game.GamePiece;
 import uk.ac.soton.comp1206.game.Multimedia;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
@@ -21,6 +22,10 @@ public class ChallengeScene extends BaseScene {
 
     private static final Logger logger = LogManager.getLogger(MenuScene.class);
     protected Game game;
+    /**
+     * Holds the PieceBoard representation of the next piece
+     */
+    private PieceBoard upcomingPiece;
 
     /**
      * Create a new Single Player challenge scene
@@ -30,6 +35,7 @@ public class ChallengeScene extends BaseScene {
         super(gameWindow);
         setSceneName("Challenge");
         logger.info("Creating Challenge Scene");
+        upcomingPiece = new PieceBoard(3,3, gameWindow.getWidth()/6, gameWindow.getHeight()/5);
     }
 
     /**
@@ -105,9 +111,8 @@ public class ChallengeScene extends BaseScene {
         pieceBox.setSpacing(10);
         var upcomingHeader = new Text("Upcoming");
         upcomingHeader.getStyleClass().add("heading");
-        var currentPiece = new PieceBoard(3,3, gameWindow.getWidth()/6, gameWindow.getHeight()/5);
-        var nextPiece = new PieceBoard(3,3, gameWindow.getWidth()/7, gameWindow.getHeight()/6);
-        pieceBox.getChildren().addAll(upcomingHeader,currentPiece,nextPiece);
+        var followingPiece = new PieceBoard(3,3, gameWindow.getWidth()/7, gameWindow.getHeight()/6);
+        pieceBox.getChildren().addAll(upcomingHeader,upcomingPiece,followingPiece);
 
         infoPane.getChildren().addAll(hiScoreBox,levelBox, pieceBox);
 
@@ -145,6 +150,7 @@ public class ChallengeScene extends BaseScene {
 
         //Start new game
         game = new Game(5, 5);
+        game.setNextPieceListener(this::upcomingPiece);
     }
 
     /**
@@ -154,5 +160,10 @@ public class ChallengeScene extends BaseScene {
         super.initialise();
         logger.info("Initialising Challenge");
         game.start();
+    }
+
+    private void upcomingPiece(GamePiece piece) {
+        logger.info("Displaying upcoming piece");
+        upcomingPiece.displayPiece(piece);
     }
 }

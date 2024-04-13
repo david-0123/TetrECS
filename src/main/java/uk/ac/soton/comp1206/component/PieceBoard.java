@@ -20,6 +20,7 @@ public class PieceBoard extends GameBoard {
     public void displayPiece(GamePiece piece) {
       for (int x = 0; x < cols; x++) {
         for (int y = 0; y < rows; y++) {
+          grid.set(x, y, 0);
           if (piece.getBlocks()[x][y] >= 1) {
             grid.set(x, y, piece.getValue());
           }
