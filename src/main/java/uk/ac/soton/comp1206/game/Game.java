@@ -36,7 +36,12 @@ public class Game {
     /**
      * The current game piece the user has to place
      */
-    private static GamePiece currentPiece;
+    private GamePiece currentPiece;
+
+    /**
+     * The game piece that comes after the current piece
+     */
+    private GamePiece followingPiece;
 
     /**
      * The user's score
@@ -95,8 +100,10 @@ public class Game {
      */
     public void initialiseGame() {
         logger.info("Initialising game");
+        followingPiece = spawnPiece();
         logger.info("Initialising first piece");
         nextPiece();
+
     }
 
     /**
@@ -137,6 +144,12 @@ public class Game {
         return rows;
     }
 
+    public void swapCurrentPiece() {
+        var temp = currentPiece;
+        currentPiece = followingPiece;
+        followingPiece = temp;
+    }
+
     /**
      * Creates a random game piece
      * @return the created game piece
@@ -152,11 +165,13 @@ public class Game {
      */
     public void nextPiece() {
         logger.info("Generating next piece");
-        currentPiece = spawnPiece();
+        currentPiece = followingPiece;
+        followingPiece = spawnPiece();
 
         if (nextPieceListener != null) {
-            nextPieceListener.nextPiece(currentPiece);
+            nextPieceListener.nextPiece(currentPiece, followingPiece);
         }
+
     }
 
     /**
@@ -280,7 +295,19 @@ public class Game {
         return multiplier;
     }
 
+    /**
+     * Method to set the NextPieceListener attached to the Game
+     * @param nextPieceListener listener
+     */
     public void setNextPieceListener(NextPieceListener nextPieceListener) {
         this.nextPieceListener = nextPieceListener;
+    }
+
+    /**
+     * Method to rotate the current piece
+     */
+    public void rotateCurrentPiece() {
+        logger.info("Rotating current piece");
+        currentPiece.rotate();
     }
 }

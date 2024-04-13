@@ -9,7 +9,8 @@ public interface NextPieceListener {
 
   /**
    * Handle generating the next game piece
-   * @param piece the next game piece
+   * @param currentPiece the next game piece
+   * @param followingPiece the following game piece
    */
-  public void nextPiece(GamePiece piece);
+  public void nextPiece(GamePiece currentPiece, GamePiece followingPiece);
 }

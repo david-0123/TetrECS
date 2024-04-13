@@ -22,10 +22,16 @@ public class ChallengeScene extends BaseScene {
 
     private static final Logger logger = LogManager.getLogger(MenuScene.class);
     protected Game game;
+
     /**
      * Holds the PieceBoard representation of the next piece
      */
     private PieceBoard upcomingPiece;
+
+    /**
+     * Holds the PieceBoard representation of the following piece
+     */
+    private PieceBoard followingPiece;
 
     /**
      * Create a new Single Player challenge scene
@@ -36,6 +42,7 @@ public class ChallengeScene extends BaseScene {
         setSceneName("Challenge");
         logger.info("Creating Challenge Scene");
         upcomingPiece = new PieceBoard(3,3, gameWindow.getWidth()/6, gameWindow.getHeight()/5);
+        followingPiece = new PieceBoard(3,3, gameWindow.getWidth()/7, gameWindow.getHeight()/6);
     }
 
     /**
@@ -111,7 +118,6 @@ public class ChallengeScene extends BaseScene {
         pieceBox.setSpacing(10);
         var upcomingHeader = new Text("Upcoming");
         upcomingHeader.getStyleClass().add("heading");
-        var followingPiece = new PieceBoard(3,3, gameWindow.getWidth()/7, gameWindow.getHeight()/6);
         pieceBox.getChildren().addAll(upcomingHeader,upcomingPiece,followingPiece);
 
         infoPane.getChildren().addAll(hiScoreBox,levelBox, pieceBox);
@@ -162,8 +168,9 @@ public class ChallengeScene extends BaseScene {
         game.start();
     }
 
-    private void upcomingPiece(GamePiece piece) {
+    private void upcomingPiece(GamePiece currentPiece, GamePiece followPiece) {
         logger.info("Displaying upcoming piece");
-        upcomingPiece.displayPiece(piece);
+        upcomingPiece.displayPiece(currentPiece);
+        followingPiece.displayPiece(followPiece);
     }
 }
