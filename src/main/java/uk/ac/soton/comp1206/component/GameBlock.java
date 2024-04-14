@@ -147,7 +147,7 @@ public class GameBlock extends Canvas {
         gc.clearRect(0,0,width,height);
 
         //Colour fill
-        gc.setFill(colour);
+        gc.setFill(((Color) colour).brighter());
         gc.fillRect(0,0, width, height);
 
         //Darker triangle
@@ -171,14 +171,6 @@ public class GameBlock extends Canvas {
         gc.strokeLine(0, 0, 0, height);
 
         gc.setGlobalAlpha(1);
-    }
-
-    public void paintIndicator() {
-        var gc = getGraphicsContext2D();
-
-        gc.setFill(Color.WHITE);
-        gc.setGlobalAlpha(0.5);
-        gc.fillOval(12,9,20,20);
     }
 
     /**

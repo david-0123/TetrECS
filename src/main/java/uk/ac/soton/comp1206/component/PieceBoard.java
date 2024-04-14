@@ -30,8 +30,4 @@ public class PieceBoard extends GameBoard {
     }
 
     protected void blockClicked(MouseEvent event, GameBlock block) {}
-
-    public void paintIndicator() {
-      blocks[1][1].paintIndicator();
-    }
 }

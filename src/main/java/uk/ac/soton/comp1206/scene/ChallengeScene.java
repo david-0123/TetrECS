@@ -161,7 +161,6 @@ public class ChallengeScene extends BaseScene {
     private void blockRightClicked(GameBlock block) {
         game.rotateCurrentPiece();
         upcomingPiece.displayPiece(game.getCurrentPiece());
-        upcomingPiece.paintIndicator();
     }
 
     /**
@@ -173,7 +172,6 @@ public class ChallengeScene extends BaseScene {
             logger.info("Current piece clicked");
             game.rotateCurrentPiece();
             upcomingPiece.displayPiece(game.getCurrentPiece());
-            upcomingPiece.paintIndicator();
         }
     }
 
@@ -182,12 +180,10 @@ public class ChallengeScene extends BaseScene {
             logger.info("Rotate right");
             game.rotateCurrentPiece();
             upcomingPiece.displayPiece(game.getCurrentPiece());
-            upcomingPiece.paintIndicator();
         } else if (event.getCode() == KeyCode.Q || event.getCode() == KeyCode.Z || event.getText().equals("[")) {
             logger.info("Rotate left");
             game.rotateCurrentPiece(3);
             upcomingPiece.displayPiece(game.getCurrentPiece());
-            upcomingPiece.paintIndicator();
         } else if (event.getCode() == KeyCode.SPACE || event.getCode() == KeyCode.R) {
             game.swapCurrentPiece();
             displayPieces();
@@ -232,7 +228,6 @@ public class ChallengeScene extends BaseScene {
         game.start();
         Multimedia.stopMusic();
         Multimedia.playMusic("game_start.wav", "game.wav", true);
-        upcomingPiece.paintIndicator();
     }
 
     /**
@@ -247,7 +242,6 @@ public class ChallengeScene extends BaseScene {
 
     private void displayPieces() {
         upcomingPiece.displayPiece(game.getCurrentPiece());
-        upcomingPiece.paintIndicator();
         followingPiece.displayPiece(game.getFollowingPiece());
     }
 }
