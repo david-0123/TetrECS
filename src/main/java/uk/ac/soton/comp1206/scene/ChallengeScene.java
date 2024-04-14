@@ -168,6 +168,7 @@ public class ChallengeScene extends BaseScene {
      */
     private void pieceClicked(MouseEvent event) {
         if (event.getButton() == MouseButton.PRIMARY) {
+            logger.info("Current piece clicked");
             game.rotateCurrentPiece();
             upcomingPiece.displayPiece(game.getCurrentPiece());
         }

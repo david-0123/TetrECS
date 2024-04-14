@@ -177,6 +177,7 @@ public class GameBoard extends GridPane {
     protected void blockClicked(MouseEvent event, GameBlock block) {
         if (blockClickedListener != null) {
             if (event.getButton() == MouseButton.SECONDARY) {
+                logger.info("Block right-clicked: {}", block);
                 rightClickedListener.blockRightClicked(block);
             } else {
                 logger.info("Block clicked: {}", block);
