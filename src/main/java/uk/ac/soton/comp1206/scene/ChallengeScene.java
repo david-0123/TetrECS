@@ -2,6 +2,8 @@ package uk.ac.soton.comp1206.scene;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -173,6 +175,27 @@ public class ChallengeScene extends BaseScene {
         }
     }
 
+    private void keyEvents(KeyEvent event) {
+        if (event.getCode() == KeyCode.E || event.getCode() == KeyCode.C || event.getText().equals("]")) {
+            logger.info("Rotate right");
+            game.rotateCurrentPiece();
+            upcomingPiece.displayPiece(game.getCurrentPiece());
+        } else if (event.getCode() == KeyCode.Q || event.getCode() == KeyCode.Z || event.getText().equals("[")) {
+            logger.info("Rotate left");
+            game.rotateCurrentPiece(3);
+            upcomingPiece.displayPiece(game.getCurrentPiece());
+        } else if (event.getCode() == KeyCode.SPACE || event.getCode() == KeyCode.R) {
+            game.swapCurrentPiece();
+            displayPieces();
+        } else if (event.getCode() == KeyCode.ESCAPE) {
+            logger.info("Leaving Challenge scene");
+            Multimedia.stopMusic();
+            Multimedia.playMusic("menu.mp3", true);
+            logger.info("Going back to the menu");
+            gameWindow.startMenu();
+        }
+    }
+
     /**
      * Handle when the following piece is clicked in order to swap the current and following pieces
      * @param event Mouse event
@@ -181,8 +204,7 @@ public class ChallengeScene extends BaseScene {
         if (event.getButton() == MouseButton.PRIMARY) {
             logger.info("Following piece clicked");
             game.swapCurrentPiece();
-            upcomingPiece.displayPiece(game.getCurrentPiece());
-            followingPiece.displayPiece(game.getFollowingPiece());
+            displayPieces();
         }
     }
 
@@ -201,7 +223,7 @@ public class ChallengeScene extends BaseScene {
      * Initialise the scene and start the game
      */
     public void initialise() {
-        super.initialise();
+        scene.setOnKeyPressed(this::keyEvents);
         logger.info("Initialising Challenge");
         game.start();
         Multimedia.stopMusic();
@@ -215,7 +237,11 @@ public class ChallengeScene extends BaseScene {
      */
     private void upcomingPiece(GamePiece currentPiece, GamePiece followPiece) {
         logger.info("Displaying upcoming piece");
-        upcomingPiece.displayPiece(currentPiece);
-        followingPiece.displayPiece(followPiece);
+        displayPieces();
+    }
+
+    private void displayPieces() {
+        upcomingPiece.displayPiece(game.getCurrentPiece());
+        followingPiece.displayPiece(game.getFollowingPiece());
     }
 }

@@ -5,7 +5,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import uk.ac.soton.comp1206.game.Multimedia;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
 
@@ -39,10 +38,6 @@ public abstract class BaseScene {
                 if (getSceneName().equalsIgnoreCase("Menu")) {
                     logger.info("Shutting down");
                     gameWindow.exit();
-                } else if (getSceneName().equalsIgnoreCase("Challenge")){
-                    logger.info("Leaving Challenge scene");
-                    Multimedia.stopMusic();
-                    Multimedia.playMusic("menu.mp3", true);
                 }
                 logger.info("Going back to the menu");
                 gameWindow.startMenu();

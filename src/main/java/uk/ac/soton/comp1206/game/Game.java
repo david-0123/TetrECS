@@ -323,6 +323,11 @@ public class Game {
         currentPiece.rotate();
     }
 
+    public void rotateCurrentPiece(int rotations) {
+        logger.info("Rotating current piece");
+        currentPiece.rotate(rotations);
+    }
+
     public GamePiece getCurrentPiece() {
         return currentPiece;
     }
