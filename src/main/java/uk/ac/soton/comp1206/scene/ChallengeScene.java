@@ -2,6 +2,8 @@ package uk.ac.soton.comp1206.scene;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import org.apache.logging.log4j.LogManager;
@@ -43,6 +45,7 @@ public class ChallengeScene extends BaseScene {
         logger.info("Creating Challenge Scene");
         upcomingPiece = new PieceBoard(3,3, gameWindow.getWidth()/6, gameWindow.getHeight()/5);
         followingPiece = new PieceBoard(3,3, gameWindow.getWidth()/7, gameWindow.getHeight()/6);
+        upcomingPiece.setOnMouseClicked(this::pieceClicked);
     }
 
     /**
@@ -136,20 +139,42 @@ public class ChallengeScene extends BaseScene {
         //Handle block on gameboard grid being clicked
         board.setOnBlockClick(this::blockClicked);
 
+        //Handle gameboard being right-clicked
+        board.setOnRightClicked(this::blockRightClicked);
+
         Multimedia.stopMusic();
         Multimedia.playMusic("game_start.wav", "game.wav", true);
     }
 
     /**
      * Handle when a block is clicked
-     * @param gameBlock the Game Block that was clocked
+     * @param gameBlock the Game Block that was clicked
      */
     private void blockClicked(GameBlock gameBlock) {
         game.blockClicked(gameBlock);
     }
 
     /**
-     * Setup the game object and model
+     * Handle when the GameBoard is right-clicked
+     * @param block block that was clicked
+     */
+    private void blockRightClicked(GameBlock block) {
+        game.rotateCurrentPiece();
+        upcomingPiece.displayPiece(game.getCurrentPiece());
+    }
+
+    /**
+     * Handle when the current piece is left-clicked
+     */
+    private void pieceClicked(MouseEvent event) {
+        if (event.getButton() == MouseButton.PRIMARY) {
+            game.rotateCurrentPiece();
+            upcomingPiece.displayPiece(game.getCurrentPiece());
+        }
+    }
+
+    /**
+     * Set up the game object and model
      */
     public void setupGame() {
         logger.info("Starting a new challenge");

@@ -310,4 +310,8 @@ public class Game {
         logger.info("Rotating current piece");
         currentPiece.rotate();
     }
+
+    public GamePiece getCurrentPiece() {
+        return currentPiece;
+    }
 }

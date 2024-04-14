@@ -1,5 +1,6 @@
 package uk.ac.soton.comp1206.component;
 
+import javafx.scene.input.MouseEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.game.GamePiece;
@@ -27,4 +28,6 @@ public class PieceBoard extends GameBoard {
         }
        }
     }
+
+    protected void blockClicked(MouseEvent event, GameBlock block) {}
 }
