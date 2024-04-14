@@ -157,6 +157,7 @@ public class Grid {
             }
 
             logger.info("Played {}", piece);
+            Multimedia.playAudio("place.wav");
             return true;
         }
 

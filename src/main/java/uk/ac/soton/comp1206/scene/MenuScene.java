@@ -60,6 +60,7 @@ public class MenuScene extends BaseScene {
         tetrecs.setFitWidth(600);
         tetrecs.setRotate(-10);
 
+        //Small gap between the title and menu buttons
         var spacer = new Region();
         spacer.setPrefHeight(150);
 
@@ -75,13 +76,14 @@ public class MenuScene extends BaseScene {
         menuItems.getChildren().addAll(tetrecs,spacer,single,multi,instruct,exit);
 
         mainPane.setCenter(menuItems);
-
-        Multimedia.playMusic("menu.mp3", true);
+        
         rotateLogo(tetrecs);
 
         single.setOnMouseClicked(this::startGame);
         instruct.setOnMouseClicked(this::showInstructions);
         exit.setOnMouseClicked(this::exitGame);
+
+        if (!Multimedia.isMusicPlaying()) Multimedia.playMusic("menu.mp3", true);
     }
 
     /**
@@ -93,7 +95,7 @@ public class MenuScene extends BaseScene {
     }
 
     /**
-     * Handle when the Exit text object is pressed
+     * Handle when the Exit button is pressed
      * @param event event
      */
     private void exitGame(MouseEvent event) {
@@ -119,5 +121,4 @@ public class MenuScene extends BaseScene {
         rt.setAutoReverse(true);
         rt.play();
     }
-
 }

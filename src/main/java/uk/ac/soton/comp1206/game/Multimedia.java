@@ -101,6 +101,18 @@ public class Multimedia {
      */
     public static void stopMusic() {
         logger.info("Stopping background music");
-        musicPlayer.stop();
+        if (musicPlayer != null) musicPlayer.stop();
+    }
+
+    /**
+     * Checks if background music is currently playing
+     * @return true if background is playing
+     */
+    public static boolean isMusicPlaying() {
+        logger.info("Checking if music playing");
+        if (musicPlayer != null) {
+            return !musicPlayer.isMute();
+        }
+        return false;
     }
 }

@@ -46,6 +46,7 @@ public class ChallengeScene extends BaseScene {
         upcomingPiece = new PieceBoard(3,3, gameWindow.getWidth()/6, gameWindow.getHeight()/5);
         followingPiece = new PieceBoard(3,3, gameWindow.getWidth()/7, gameWindow.getHeight()/6);
         upcomingPiece.setOnMouseClicked(this::pieceClicked);
+        followingPiece.setOnMouseClicked(this::swapPieces);
     }
 
     /**
@@ -141,9 +142,6 @@ public class ChallengeScene extends BaseScene {
 
         //Handle gameboard being right-clicked
         board.setOnRightClicked(this::blockRightClicked);
-
-        Multimedia.stopMusic();
-        Multimedia.playMusic("game_start.wav", "game.wav", true);
     }
 
     /**
@@ -165,12 +163,26 @@ public class ChallengeScene extends BaseScene {
 
     /**
      * Handle when the current piece is left-clicked
+     * @param event Mouse event
      */
     private void pieceClicked(MouseEvent event) {
         if (event.getButton() == MouseButton.PRIMARY) {
             logger.info("Current piece clicked");
             game.rotateCurrentPiece();
             upcomingPiece.displayPiece(game.getCurrentPiece());
+        }
+    }
+
+    /**
+     * Handle when the following piece is clicked in order to swap the current and following pieces
+     * @param event Mouse event
+     */
+    private void swapPieces(MouseEvent event) {
+        if (event.getButton() == MouseButton.PRIMARY) {
+            logger.info("Following piece clicked");
+            game.swapCurrentPiece();
+            upcomingPiece.displayPiece(game.getCurrentPiece());
+            followingPiece.displayPiece(game.getFollowingPiece());
         }
     }
 
@@ -192,8 +204,15 @@ public class ChallengeScene extends BaseScene {
         super.initialise();
         logger.info("Initialising Challenge");
         game.start();
+        Multimedia.stopMusic();
+        Multimedia.playMusic("game_start.wav", "game.wav", true);
     }
 
+    /**
+     * Handle the visual display of the current and following pieces
+     * @param currentPiece current piece
+     * @param followPiece following piece
+     */
     private void upcomingPiece(GamePiece currentPiece, GamePiece followPiece) {
         logger.info("Displaying upcoming piece");
         upcomingPiece.displayPiece(currentPiece);

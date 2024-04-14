@@ -116,8 +116,10 @@ public class Game {
         int y = gameBlock.getY();
 
         boolean piecePlayed = grid.playPiece(currentPiece, x, y);
-        if (piecePlayed) nextPiece();
-        afterPiece(piecePlayed);
+        if (piecePlayed) {
+            nextPiece();
+            afterPiece();
+        } else Multimedia.playAudio("fail.wav");
     }
 
     /**
@@ -144,7 +146,12 @@ public class Game {
         return rows;
     }
 
+    /**
+     * Handles the swapping of the current piece and the following piece
+     */
     public void swapCurrentPiece() {
+        logger.info("Swapping current and following piece");
+        Multimedia.playAudio("rotate.wav");
         var temp = currentPiece;
         currentPiece = followingPiece;
         followingPiece = temp;
@@ -177,7 +184,7 @@ public class Game {
     /**
      * Handle the logic to clear any lines after a piece is played
      */
-    public void afterPiece(boolean piecePlayed) {
+    public void afterPiece() {
         logger.info("Checking for lines to clear");
         int linesToClear = 0;
         HashSet<GameBlockCoordinate> blocksToClear = new HashSet<>();
@@ -200,33 +207,33 @@ public class Game {
         }
 
         //Iterate through columns
-        for (int i = 0; i < rows; i++) {
+        for (int i = 0; i < cols; i++) {
             int count = 0;
-            for (int j = 0; j < cols; j++) {
+            for (int j = 0; j < rows; j++) {
                 if (grid.get(i,j) >= 1) count++;
             }
 
             //If line is full...
-            if (count == cols) {
+            if (count == rows) {
                 linesToClear++;
-                for (int j = 0; j < cols; j++) {
+                for (int j = 0; j < rows; j++) {
                     GameBlockCoordinate blockCoordinate = new GameBlockCoordinate(i,j);
                     blocksToClear.add(blockCoordinate);
                 }
             }
         }
 
-        try {
+        if (!blocksToClear.isEmpty()) {
             for (GameBlockCoordinate blockCoordinate : blocksToClear) {
                 grid.set(blockCoordinate.getX(), blockCoordinate.getY(), 0);
             }
+
             logger.info("{} lines cleared", linesToClear);
-        } catch (NullPointerException ignored) {}
+            Multimedia.playAudio("clear.wav");
+        }
 
         score(linesToClear, blocksToClear.size());
-        if (piecePlayed) {
-            multiplier(linesToClear); // Only changes/resets multiplier when a piece is played
-        }
+        multiplier(linesToClear);
         level();
     }
 
@@ -238,6 +245,8 @@ public class Game {
     public void score(int lines, int blocks) {
         int score = lines * blocks * 10 * getMultiplier();
         setScore(getScore() + score);
+        logger.info("Previous score: {}", score);
+        logger.info("New score: {}", getScore());
     }
 
     public void setScore(int score) {
@@ -256,11 +265,18 @@ public class Game {
      * Calculates the user's current level
      */
     public void level() {
-        setLevel(getScore() / 1000);
+        var oldLevel = getLevel();
+        var newLevel = getScore() / 1000;
+        if (newLevel > oldLevel) Multimedia.playAudio("level.wav");
+        setLevel(newLevel);
     }
 
     public void setLevel(int level) {
         this.level.set(level);
+    }
+
+    public int getLevel() {
+        return level.get();
     }
 
     public IntegerProperty levelProperty() {
@@ -272,7 +288,7 @@ public class Game {
     }
 
     /**
-     * Calculates the current multiplier after a piece is played/expires
+     * Calculates the current multiplier after a piece is played/time expires
      * @param linesCleared the number of lines cleared by a piece
      */
     public void multiplier(int linesCleared) {
@@ -289,10 +305,6 @@ public class Game {
 
     public int getMultiplier() {
         return multiplier.get();
-    }
-
-    public IntegerProperty multiplierProperty() {
-        return multiplier;
     }
 
     /**
@@ -313,5 +325,9 @@ public class Game {
 
     public GamePiece getCurrentPiece() {
         return currentPiece;
+    }
+
+    public GamePiece getFollowingPiece() {
+        return followingPiece;
     }
 }
