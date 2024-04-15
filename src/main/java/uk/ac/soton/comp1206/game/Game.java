@@ -316,13 +316,17 @@ public class Game {
     }
 
     /**
-     * Method to rotate the current piece
+     * Method to rotate the current piece once to the right
      */
     public void rotateCurrentPiece() {
         logger.info("Rotating current piece");
         currentPiece.rotate();
     }
 
+    /**
+     * Method to rotate the current piece a specified amount of times
+     * @param rotations number of rotations
+     */
     public void rotateCurrentPiece(int rotations) {
         logger.info("Rotating current piece");
         currentPiece.rotate(rotations);

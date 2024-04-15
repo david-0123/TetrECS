@@ -150,6 +150,12 @@ public class GameBoard extends GridPane {
         //Add a mouse click handler to the block to trigger GameBoard blockClicked method
         block.setOnMouseClicked(e -> blockClicked(e, block));
 
+        //Trigger hoverEnter method when mouse hovers a game block on the main game board
+        if (!(this instanceof PieceBoard)) {
+            block.setOnMouseEntered(e -> hoverEnter(e, block));
+            block.setOnMouseExited(e -> hoverLeave(e, block));
+        }
+
         return block;
     }
 
@@ -184,5 +190,23 @@ public class GameBoard extends GridPane {
                 blockClickedListener.blockClicked(block);
             }
         }
+    }
+
+    /**
+     * Method called when a block is hovered over
+     * @param event mouse hover over the block
+     * @param block game block
+     */
+    private void hoverEnter(MouseEvent event, GameBlock block) {
+        block.paintHover();
+    }
+
+    /**
+     * Method to reset block's painting when mouse exits it
+     * @param event mouse leaves the block
+     * @param block game block
+     */
+    private void hoverLeave(MouseEvent event, GameBlock block) {
+        block.paint();
     }
 }

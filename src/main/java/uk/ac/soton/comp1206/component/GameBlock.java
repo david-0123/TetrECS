@@ -173,12 +173,28 @@ public class GameBlock extends Canvas {
         gc.setGlobalAlpha(1);
     }
 
+    /**
+     * Method to paint the small indicator circle on the piece board
+     */
     public void paintIndicator() {
         var gc = getGraphicsContext2D();
 
         gc.setFill(Color.WHITE);
         gc.setGlobalAlpha(0.5);
         gc.fillOval(12,9,20,20);
+        gc.setGlobalAlpha(1);
+    }
+
+    /**
+     * Method to paint a faint white layer over the block
+     */
+    public void paintHover() {
+        var gc = getGraphicsContext2D();
+
+        gc.setFill(Color.WHITE);
+        gc.setGlobalAlpha(0.3);
+        gc.fillRect(0,0,width,height);
+        gc.setGlobalAlpha(1);
     }
 
     /**
