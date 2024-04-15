@@ -1,5 +1,6 @@
 package uk.ac.soton.comp1206.component;
 
+import javafx.animation.AnimationTimer;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
@@ -64,6 +65,16 @@ public class GameBlock extends Canvas {
     private final IntegerProperty value = new SimpleIntegerProperty(0);
 
     /**
+     * Initial opacity used for the fade out animation
+     */
+    private static double opacity = 1;
+
+    /**
+     * Speed of the fade out animation
+     */
+    private final double fadeSpeed = 0.005;
+
+    /**
      * Create a new single Game Block
      * @param gameBoard the board this block belongs to
      * @param x the column the block exists in
@@ -108,7 +119,7 @@ public class GameBlock extends Canvas {
             paintEmpty();
         } else {
             //If the block is not empty, paint with the colour represented by the value
-            paintColor(COLOURS[value.get()]);
+            paintColor(COLOURS[getValue()]);
         }
     }
 
@@ -147,14 +158,14 @@ public class GameBlock extends Canvas {
         gc.clearRect(0,0,width,height);
 
         //Colour fill
-        gc.setFill(colour);
+        gc.setFill(((Color) colour).saturate());
         gc.fillRect(0,0, width, height);
 
-        //Darker triangle
-        double[] xPoints = {0, width, width};
-        double[] yPoints = {0, 0, height};
-        gc.setGlobalAlpha(0.04);
-        gc.setFill(Color.BLACK);
+        //Lighter triangle
+        double[] xPoints = {0, 0, width};
+        double[] yPoints = {0, height, height};
+        gc.setGlobalAlpha(0.15);
+        gc.setFill(Color.WHITE);
         gc.fillPolygon(xPoints, yPoints, 3);
 
         //Border
@@ -164,7 +175,6 @@ public class GameBlock extends Canvas {
         gc.strokeLine(0, height, width, height);
         gc.strokeLine(width, 0, width, height);
 
-        gc.setGlobalAlpha(0.3);
         gc.setLineWidth(5);
         gc.setStroke(Color.WHITE);
         gc.strokeLine(0, 0, width, 0);
@@ -229,4 +239,32 @@ public class GameBlock extends Canvas {
         value.bind(input);
     }
 
+    public void fadeOut() {
+        opacity = 1;
+        AnimationTimer timer = new AnimationTimer() {
+            public void handle(long l) {
+                opacity -= fadeSpeed;
+                paintEmpty();
+                if (opacity <= 0) {
+                    stopFade(this);
+                } else {
+                    fadePaint();
+                }
+            }
+        };
+
+        timer.start();
+    }
+
+    private void fadePaint() {
+        var gc = getGraphicsContext2D();
+
+        gc.setFill(Color.GREEN.deriveColor(0,1,1,opacity).saturate().brighter());
+        gc.fillRect(0,0,width,height);
+    }
+
+    private void stopFade(AnimationTimer timer) {
+        timer.stop();
+        gameBoard.grid.set(getX(), getY(), 0);
+    }
 }

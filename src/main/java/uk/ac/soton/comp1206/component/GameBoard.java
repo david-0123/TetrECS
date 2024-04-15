@@ -1,5 +1,6 @@
 package uk.ac.soton.comp1206.component;
 
+import java.util.HashSet;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -208,5 +209,15 @@ public class GameBoard extends GridPane {
      */
     private void hoverLeave(MouseEvent event, GameBlock block) {
         block.paint();
+    }
+    
+    public void fadeOut(HashSet<GameBlockCoordinate> coords) {
+        for (GameBlockCoordinate coord : coords) {
+            var x = coord.getX();
+            var y = coord.getY();
+
+            var block = blocks[x][y];
+            block.fadeOut();
+        }
     }
 }

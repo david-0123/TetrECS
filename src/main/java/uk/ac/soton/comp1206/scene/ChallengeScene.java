@@ -1,5 +1,6 @@
 package uk.ac.soton.comp1206.scene;
 
+import java.util.HashSet;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.input.KeyCode;
@@ -11,6 +12,7 @@ import javafx.scene.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.component.GameBlock;
+import uk.ac.soton.comp1206.component.GameBlockCoordinate;
 import uk.ac.soton.comp1206.component.GameBoard;
 import uk.ac.soton.comp1206.component.PieceBoard;
 import uk.ac.soton.comp1206.game.Game;
@@ -36,6 +38,11 @@ public class ChallengeScene extends BaseScene {
      * Holds the PieceBoard representation of the following piece
      */
     private PieceBoard followingPiece;
+
+    /**
+     * Holds the GameBoard UI element
+     */
+    private GameBoard board;
 
     /**
      * Create a new Single Player challenge scene
@@ -71,7 +78,7 @@ public class ChallengeScene extends BaseScene {
         var mainPane = new BorderPane();
         challengePane.getChildren().add(mainPane);
 
-        var board = new GameBoard(game.getGrid(),gameWindow.getWidth()/2,gameWindow.getWidth()/2);
+        board = new GameBoard(game.getGrid(),gameWindow.getWidth()/2,gameWindow.getWidth()/2);
         mainPane.setCenter(board);
 
         /*
@@ -221,6 +228,7 @@ public class ChallengeScene extends BaseScene {
         //Start new game
         game = new Game(5, 5);
         game.setNextPieceListener(this::upcomingPiece);
+        game.setLineClearedListener(this::lineCleared);
     }
 
     /**
@@ -248,5 +256,9 @@ public class ChallengeScene extends BaseScene {
         upcomingPiece.displayPiece(game.getCurrentPiece());
         upcomingPiece.paintIndicator();
         followingPiece.displayPiece(game.getFollowingPiece());
+    }
+
+    private void lineCleared(HashSet<GameBlockCoordinate> coords) {
+        board.fadeOut(coords);
     }
 }
