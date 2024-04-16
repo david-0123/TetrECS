@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.component.GameBlock;
 import uk.ac.soton.comp1206.component.GameBlockCoordinate;
+import uk.ac.soton.comp1206.event.GameLoopListener;
 import uk.ac.soton.comp1206.event.LineClearedListener;
 import uk.ac.soton.comp1206.event.NextPieceListener;
 
@@ -82,7 +83,12 @@ public class Game {
     private Timer gameTimer;
 
     /**
-     * Create a new game with the specified rows and columns. Creates a corresponding grid model.
+     * The listener to call while the timer is running
+     */
+    private GameLoopListener gameLoopListener;
+
+    /**
+     * Creates a new game with the specified rows and columns. Creates a corresponding grid model.
      * @param cols number of columns
      * @param rows number of rows
      */
@@ -97,11 +103,11 @@ public class Game {
         level = new SimpleIntegerProperty(0);
         lives = new SimpleIntegerProperty(3);
         multiplier = new SimpleIntegerProperty(1);
-
+        gameTimer = new Timer();
     }
 
     /**
-     * Start the game
+     * Starts the game
      */
     public void start() {
         logger.info("Starting game");
@@ -109,18 +115,17 @@ public class Game {
     }
 
     /**
-     * Initialise a new game and set up anything that needs to be done at the start
+     * Initialises a new game and set up anything that needs to be done at the start
      */
     public void initialiseGame() {
         logger.info("Initialising game");
         followingPiece = spawnPiece();
-        logger.info("Initialising first piece");
         nextPiece();
         startTimer();
     }
 
     /**
-     * Handle what should happen when a particular block is clicked
+     * Handles what should happen when a particular block is clicked
      * @param gameBlock the block that was clicked
      */
     public void blockClicked(GameBlock gameBlock) {
@@ -137,7 +142,7 @@ public class Game {
     }
 
     /**
-     * Get the grid model inside this game representing the game state of the board
+     * Gets the grid model inside this game representing the game state of the board
      * @return game grid model
      */
     public Grid getGrid() {
@@ -145,7 +150,7 @@ public class Game {
     }
 
     /**
-     * Get the number of columns in this game
+     * Gets the number of columns in this game
      * @return number of columns
      */
     public int getCols() {
@@ -153,7 +158,7 @@ public class Game {
     }
 
     /**
-     * Get the number of rows in this game
+     * Gets the number of rows in this game
      * @return number of rows
      */
     public int getRows() {
@@ -185,7 +190,6 @@ public class Game {
      * Gets the next game piece the user has to place
      */
     public void nextPiece() {
-        logger.info("Generating next piece");
         currentPiece = followingPiece;
         followingPiece = spawnPiece();
 
@@ -196,7 +200,7 @@ public class Game {
     }
 
     /**
-     * Handle the logic to clear any lines after a piece is played
+     * Handles the logic to clear any lines after a piece is played
      */
     public void afterPiece() {
         logger.info("Checking for lines to clear");
@@ -333,19 +337,31 @@ public class Game {
     }
 
     /**
-     * Method to set the NextPieceListener attached to the Game
+     * Sets the NextPieceListener attached to the Game
      * @param nextPieceListener listener
      */
     public void setNextPieceListener(NextPieceListener nextPieceListener) {
         this.nextPieceListener = nextPieceListener;
     }
 
+    /**
+     * Sets the LineClearedListener attached to the Game
+     * @param lineClearedListener listener
+     */
     public void setLineClearedListener(LineClearedListener lineClearedListener) {
         this.lineClearedListener = lineClearedListener;
     }
 
     /**
-     * Method to rotate the current piece once to the right
+     * Sets the GameLoopListener attached to the Game
+     * @param gameLoopListener listener
+     */
+    public void setGameLoopListener(GameLoopListener gameLoopListener) {
+        this.gameLoopListener = gameLoopListener;
+    }
+
+    /**
+     * Rotates the current piece once to the right
      */
     public void rotateCurrentPiece() {
         logger.info("Rotating current piece");
@@ -353,7 +369,7 @@ public class Game {
     }
 
     /**
-     * Method to rotate the current piece a specified amount of times
+     * Rotates the current piece a specified amount of times
      * @param rotations number of rotations
      */
     public void rotateCurrentPiece(int rotations) {
@@ -369,27 +385,45 @@ public class Game {
         return followingPiece;
     }
 
-    private int getTimerDelay() {
+    public double getTimerDelay() {
         return Math.max(2500, 12000-(500*getLevel()));
     }
-    
+
+    /**
+     * Starts the game timer
+     */
     private void startTimer() {
-        logger.info("Starting timer");
-        gameTimer.schedule(new TimerTask() {
+        logger.info("Game timer started");
+        if (gameLoopListener != null) {
+            gameLoopListener.setOnGameLoop();
+        }
+        gameTimer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 gameLoop();
             }
-        }, getTimerDelay());
+        }, (long) getTimerDelay(), (long) getTimerDelay());
     }
 
+    /**
+     * Called when the timer reaches the end and deducts a life.<br>
+     * Checks if the user has run out of lives in which case the game is over.<br>
+     * Otherwise, get the next piece, reset the multiplier and restart the timer
+     */
     private void gameLoop() {
         logger.info("Timer ran out");
         setLives(getLives() - 1);
-        nextPiece();
-        setMultiplier(1);
-        restartTimer();
+        if (getLives() <= 0) {
+            gameTimer.cancel();
+        } else {
+            nextPiece();
+            setMultiplier(1);
+            restartTimer();
+        }
     }
 
+    /**
+     * Cancels the timer and restarts it from the beginning
+     */
     private void restartTimer() {
         gameTimer.cancel();
         gameTimer = new Timer();

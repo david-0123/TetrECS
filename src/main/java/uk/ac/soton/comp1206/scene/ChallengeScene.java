@@ -1,6 +1,9 @@
 package uk.ac.soton.comp1206.scene;
 
 import java.util.HashSet;
+import javafx.animation.FillTransition;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.input.KeyCode;
@@ -8,7 +11,10 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.component.GameBlock;
@@ -45,7 +51,22 @@ public class ChallengeScene extends BaseScene {
     private GameBoard board;
 
     /**
-     * Create a new Single Player challenge scene
+     * Holds the UI timer
+     */
+    private Rectangle timerBar;
+
+    /**
+     * Holds the current time remaining on the timer
+     */
+    private double currentTime;
+
+    /**
+     * Holds the Timeline object the UI timer bar uses
+     */
+    private Timeline timeline;
+
+    /**
+     * Creates a new Single Player challenge scene
      * @param gameWindow the Game Window
      */
     public ChallengeScene(GameWindow gameWindow) {
@@ -56,10 +77,15 @@ public class ChallengeScene extends BaseScene {
         followingPiece = new PieceBoard(3,3, gameWindow.getWidth()/7, gameWindow.getHeight()/6);
         upcomingPiece.setOnMouseClicked(this::pieceClicked);
         followingPiece.setOnMouseClicked(this::swapPieces);
+
+        timeline = new Timeline(
+            new KeyFrame(Duration.millis(1), e -> updateTimerBar()) //Update the timer bar every millisecond
+        );
+        timeline.setCycleCount(Timeline.INDEFINITE);
     }
 
     /**
-     * Build the Challenge window
+     * Builds the Challenge window
      */
     @Override
     public void build() {
@@ -143,8 +169,11 @@ public class ChallengeScene extends BaseScene {
         topRow.setSpacing(150);
         topRow.setPadding(new Insets(10,0,0,0));
 
+        timerBar = new Rectangle(gameWindow.getWidth(), 30, Color.GREEN);
+
         mainPane.setTop(topRow);
         mainPane.setRight(infoPane);
+        mainPane.setBottom(timerBar);
 
         //Handle block on gameboard grid being clicked
         board.setOnBlockClick(this::blockClicked);
@@ -154,7 +183,7 @@ public class ChallengeScene extends BaseScene {
     }
 
     /**
-     * Handle when a block is clicked
+     * Handles when a block is clicked
      * @param gameBlock the Game Block that was clicked
      */
     private void blockClicked(GameBlock gameBlock) {
@@ -162,7 +191,7 @@ public class ChallengeScene extends BaseScene {
     }
 
     /**
-     * Handle when the GameBoard is right-clicked
+     * Handles when the GameBoard is right-clicked
      * @param block block that was clicked
      */
     private void blockRightClicked(GameBlock block) {
@@ -172,7 +201,7 @@ public class ChallengeScene extends BaseScene {
     }
 
     /**
-     * Handle when the current piece is left-clicked
+     * Handles when the current piece is left-clicked
      * @param event Mouse event
      */
     private void pieceClicked(MouseEvent event) {
@@ -184,6 +213,10 @@ public class ChallengeScene extends BaseScene {
         }
     }
 
+    /**
+     * Defines all the key events attached to the scene
+     * @param event key event
+     */
     private void keyEvents(KeyEvent event) {
         if (event.getCode() == KeyCode.E || event.getCode() == KeyCode.C || event.getText().equals("]")) {
             logger.info("Rotate right");
@@ -199,16 +232,23 @@ public class ChallengeScene extends BaseScene {
             game.swapCurrentPiece();
             displayPieces();
         } else if (event.getCode() == KeyCode.ESCAPE) {
-            logger.info("Leaving Challenge scene");
-            Multimedia.stopMusic();
-            Multimedia.playMusic("menu.mp3", true);
-            logger.info("Going back to the menu");
-            gameWindow.startMenu();
+            escape();
         }
     }
 
     /**
-     * Handle when the following piece is clicked in order to swap the current and following pieces
+     * Handles leaving the challenge scene and going back to the menu
+     */
+    private void escape() {
+        logger.info("Leaving Challenge scene");
+        Multimedia.stopMusic();
+        Multimedia.playMusic("menu.mp3", true);
+        logger.info("Going back to the menu");
+        gameWindow.startMenu();
+    }
+
+    /**
+     * Handles when the following piece is clicked in order to swap the current and following pieces
      * @param event Mouse event
      */
     private void swapPieces(MouseEvent event) {
@@ -220,7 +260,7 @@ public class ChallengeScene extends BaseScene {
     }
 
     /**
-     * Set up the game object and model
+     * Sets up the game object and model
      */
     public void setupGame() {
         logger.info("Starting a new challenge");
@@ -229,10 +269,11 @@ public class ChallengeScene extends BaseScene {
         game = new Game(5, 5);
         game.setNextPieceListener(this::upcomingPiece);
         game.setLineClearedListener(this::lineCleared);
+        game.setGameLoopListener(this::timer);
     }
 
     /**
-     * Initialise the scene and start the game
+     * Initialises the scene and start the game
      */
     public void initialise() {
         scene.setOnKeyPressed(this::keyEvents);
@@ -243,22 +284,88 @@ public class ChallengeScene extends BaseScene {
     }
 
     /**
-     * Handle the visual display of the current and following pieces
+     * Handles the visual display of the current and following pieces
      * @param currentPiece current piece
      * @param followPiece following piece
      */
     private void upcomingPiece(GamePiece currentPiece, GamePiece followPiece) {
-        logger.info("Displaying upcoming piece");
         displayPieces();
     }
 
+    /**
+     * Handles the visual fade out animation when a line is cleared
+     * @param coords set of blocks to fade out
+     */
+    private void lineCleared(HashSet<GameBlockCoordinate> coords) {
+        board.fadeOut(coords);
+    }
+
+    /**
+     * Method linked to the Game timer via the GameLoopListener
+     */
+    private void timer() {
+        //Stops the previous timeline before starting a new one
+        if (timeline != null) {
+            timeline.stop();
+        }
+
+        currentTime = game.getTimerDelay();
+        logger.info("UI timer started");
+
+        timeline.playFromStart();
+    }
+
+    /**
+     * Called every millisecond to resize the timer bar and colour if necessary
+     */
+    private void updateTimerBar() {
+        //Scales the width of the timer based on remaining time
+        var ratio = currentTime / game.getTimerDelay();
+        timerBar.setWidth(ratio * gameWindow.getWidth());
+
+        Color targetColor;
+
+        if (ratio > 0.5) {
+            targetColor = Color.GREEN;
+        } else if (ratio > 0.4) {
+            targetColor = Color.GREENYELLOW;
+        } else if (ratio > 0.3) {
+            targetColor = Color.ORANGE;
+        } else if (ratio > 0.2) {
+            targetColor = Color.ORANGERED;
+        }  else {
+            targetColor = Color.RED;
+        }
+
+        //Start gradually changing colour once half the time has elapsed
+        if (ratio <= 0.5) {
+            var transition = new FillTransition(Duration.millis(200), timerBar, (Color) timerBar.getFill(), targetColor);
+            transition.play();
+        } else {
+            timerBar.setFill(Color.GREEN);
+        }
+
+        currentTime -= 1;
+
+        isGameOver();
+    }
+
+    /**
+     * Checks if the user has run out of lives
+     */
+    private void isGameOver() {
+        if (game.getLives() <= 0) {
+            timeline.stop();
+            escape();
+        }
+    }
+
+    /**
+     * Handles the UI rendering of the current and following PieceBoards
+     */
     private void displayPieces() {
         upcomingPiece.displayPiece(game.getCurrentPiece());
         upcomingPiece.paintIndicator();
         followingPiece.displayPiece(game.getFollowingPiece());
-    }
-
-    private void lineCleared(HashSet<GameBlockCoordinate> coords) {
-        board.fadeOut(coords);
     }
 }
