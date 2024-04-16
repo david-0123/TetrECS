@@ -2,6 +2,8 @@ package uk.ac.soton.comp1206.game;
 
 import java.util.HashSet;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import org.apache.logging.log4j.LogManager;
@@ -75,6 +77,11 @@ public class Game {
     private LineClearedListener lineClearedListener;
 
     /**
+     * Holds how long until the next piece must be played
+     */
+    private Timer gameTimer;
+
+    /**
      * Create a new game with the specified rows and columns. Creates a corresponding grid model.
      * @param cols number of columns
      * @param rows number of rows
@@ -109,7 +116,7 @@ public class Game {
         followingPiece = spawnPiece();
         logger.info("Initialising first piece");
         nextPiece();
-
+        startTimer();
     }
 
     /**
@@ -125,6 +132,7 @@ public class Game {
         if (piecePlayed) {
             nextPiece();
             afterPiece();
+            restartTimer();
         } else Multimedia.playAudio("fail.wav");
     }
 
@@ -296,6 +304,14 @@ public class Game {
         return lives;
     }
 
+    public void setLives(int lives) {
+        this.lives.set(lives);
+    }
+
+    public int getLives() {
+        return lives.get();
+    }
+
     /**
      * Calculates the current multiplier after a piece is played/time expires
      * @param linesCleared the number of lines cleared by a piece
@@ -351,5 +367,32 @@ public class Game {
 
     public GamePiece getFollowingPiece() {
         return followingPiece;
+    }
+
+    private int getTimerDelay() {
+        return Math.max(2500, 12000-(500*getLevel()));
+    }
+    
+    private void startTimer() {
+        logger.info("Starting timer");
+        gameTimer.schedule(new TimerTask() {
+            public void run() {
+                gameLoop();
+            }
+        }, getTimerDelay());
+    }
+
+    private void gameLoop() {
+        logger.info("Timer ran out");
+        setLives(getLives() - 1);
+        nextPiece();
+        setMultiplier(1);
+        restartTimer();
+    }
+
+    private void restartTimer() {
+        gameTimer.cancel();
+        gameTimer = new Timer();
+        startTimer();
     }
 }
