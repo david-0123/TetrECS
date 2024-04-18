@@ -108,7 +108,7 @@ public class MenuScene extends BaseScene {
      */
     private void showInstructions(MouseEvent event) {
         Multimedia.playAudio("transition.wav");
-        gameWindow.instructions();
+        gameWindow.startInstructions();
     }
 
     /**

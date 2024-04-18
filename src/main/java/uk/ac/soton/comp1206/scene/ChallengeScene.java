@@ -356,7 +356,10 @@ public class ChallengeScene extends BaseScene {
     private void isGameOver() {
         if (game.getLives() <= 0) {
             timeline.stop();
-            escape();
+            logger.info("Leaving Challenge scene");
+            Multimedia.stopMusic();
+            Multimedia.playMusic("menu.mp3", true);
+            gameWindow.startScores(game);
         }
     }
 
