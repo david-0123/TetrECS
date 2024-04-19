@@ -413,7 +413,7 @@ public class Game {
         logger.info("Timer ran out");
         setLives(getLives() - 1);
         Multimedia.playAudio("lifelose.wav");
-        if (getLives() <= 0) {
+        if (getLives() < 0) {
             gameTimer.cancel();
         } else {
             nextPiece();
@@ -429,5 +429,12 @@ public class Game {
         gameTimer.cancel();
         gameTimer = new Timer();
         startTimer();
+    }
+
+    /**
+     * Stops the game timer
+     */
+    public void stopGame() {
+        gameTimer.cancel();
     }
 }

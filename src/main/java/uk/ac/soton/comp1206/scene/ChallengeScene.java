@@ -354,8 +354,9 @@ public class ChallengeScene extends BaseScene {
      * Checks if the user has run out of lives
      */
     private void isGameOver() {
-        if (game.getLives() <= 0) {
+        if (game.getLives() < 0) {
             timeline.stop();
+            game.stopGame();
             logger.info("Leaving Challenge scene");
             Multimedia.stopMusic();
             Multimedia.playMusic("menu.mp3", true);

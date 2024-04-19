@@ -24,7 +24,7 @@ public class ScoresList extends VBox {
     public ScoresList(ListProperty<Pair<String, Integer>> sceneScores) {
         this.setAlignment(Pos.TOP_CENTER);
         this.setSpacing(10);
-        this.setPadding(new Insets(50,0,0,0));
+        this.setPadding(new Insets(20,0,0,0));
 
         if (!sceneScores.isEmpty()) {
             scores = sceneScores;
@@ -44,12 +44,17 @@ public class ScoresList extends VBox {
     private void updateUI() {
         logger.info("Updating UI ScoresList");
         getChildren().clear();
+        var counter = 1;
 
         for (Pair<String, Integer> score : scores) {
-            var label = new Label(score.getKey() + ": " + score.getValue());
-            label.setOpacity(0);
-            label.getStyleClass().add("scorelist");
-            getChildren().add(label);
+            if (counter < 11) {
+                var label = new Label(score.getKey() + ": " + score.getValue());
+                label.setOpacity(0);
+                label.getStyleClass().add("scorelist");
+                label.setTextFill(GameBlock.COLOURS[counter]);
+                getChildren().add(label);
+                counter++;
+            }
         }
     }
 
@@ -67,6 +72,7 @@ public class ScoresList extends VBox {
             fadeTransition.setToValue(1); // Set final opacity to 1
             fadeTransition.setDelay(Duration.seconds(i * 0.1)); // Delay each label's animation
             fadeTransition.play(); // Start the animation
+            label.setOpacity(1);
         }
     }
 }

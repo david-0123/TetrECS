@@ -77,7 +77,7 @@ public class MenuScene extends BaseScene {
 
         mainPane.setCenter(menuItems);
         
-        rotateLogo(tetrecs);
+        rotateLogo(tetrecs, 20);
 
         single.setOnMouseClicked(this::startGame);
         instruct.setOnMouseClicked(this::showInstructions);
@@ -114,10 +114,11 @@ public class MenuScene extends BaseScene {
     /**
      * Plays an animation that continuously rotates the given node
      * @param node node to be rotated
+     * @param angle angle of rotation
      */
-    public void rotateLogo(Node node) {
+    public static void rotateLogo(Node node, int angle) {
         RotateTransition rt = new RotateTransition(Duration.seconds(2), node);
-        rt.setByAngle(20);
+        rt.setByAngle(angle);
         rt.setCycleCount(Animation.INDEFINITE);
         rt.setAutoReverse(true);
         rt.play();
