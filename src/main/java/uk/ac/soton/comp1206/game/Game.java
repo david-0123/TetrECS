@@ -103,7 +103,7 @@ public class Game {
         level = new SimpleIntegerProperty(0);
         lives = new SimpleIntegerProperty(3);
         multiplier = new SimpleIntegerProperty(1);
-        gameTimer = new Timer();
+
     }
 
     /**
@@ -265,8 +265,8 @@ public class Game {
      */
     public void score(int lines, int blocks) {
         int score = lines * blocks * 10 * getMultiplier();
+        logger.info("Previous score: {}", getScore());
         setScore(getScore() + score);
-        logger.info("Previous score: {}", score);
         logger.info("New score: {}", getScore());
     }
 
@@ -397,6 +397,8 @@ public class Game {
         if (gameLoopListener != null) {
             gameLoopListener.setOnGameLoop();
         }
+
+        gameTimer = new Timer();
         gameTimer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 gameLoop();
@@ -414,7 +416,7 @@ public class Game {
         setLives(getLives() - 1);
         Multimedia.playAudio("lifelose.wav");
         if (getLives() < 0) {
-            gameTimer.cancel();
+            stopGame();
         } else {
             nextPiece();
             setMultiplier(1);
@@ -426,8 +428,7 @@ public class Game {
      * Cancels the timer and restarts it from the beginning
      */
     private void restartTimer() {
-        gameTimer.cancel();
-        gameTimer = new Timer();
+        stopGame();
         startTimer();
     }
 

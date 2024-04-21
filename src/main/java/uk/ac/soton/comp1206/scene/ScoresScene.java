@@ -230,8 +230,6 @@ public class ScoresScene extends BaseScene {
                 dialog.setHeaderText("Congratulations! You achieved a new high score.");
                 dialog.setContentText("Please enter your name:");
                 dialog.setResizable(false);
-                dialog.setWidth(gameWindow.getWidth());
-                dialog.setHeight(gameWindow.getHeight());
                 var image = new ImageView(new Image(this.getClass().getResource("/images/HighScore.png").toExternalForm()));
                 image.setPreserveRatio(true);
                 image.setFitWidth(200);

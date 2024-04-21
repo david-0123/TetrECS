@@ -1,5 +1,11 @@
 package uk.ac.soton.comp1206.scene;
 
+import static java.lang.Integer.parseInt;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashSet;
 import javafx.animation.FillTransition;
 import javafx.animation.KeyFrame;
@@ -64,6 +70,11 @@ public class ChallengeScene extends BaseScene {
      * Holds the Timeline object the UI timer bar uses
      */
     private Timeline timeline;
+
+    /**
+     * Holds the text representation of the current high score
+     */
+    private Text hiScoreNumber;
 
     /**
      * Creates a new Single Player challenge scene
@@ -138,8 +149,8 @@ public class ChallengeScene extends BaseScene {
         var hiScoreBox = new VBox();
         hiScoreBox.setAlignment(Pos.CENTER);
         var hiScoreHeading = new Text("High Score");
-        var hiScoreNumber = new Text("100");
         hiScoreHeading.getStyleClass().add("heading");
+        getHighScore();
         hiScoreNumber.getStyleClass().add("hiscore");
         hiScoreBox.getChildren().addAll(hiScoreHeading,hiScoreNumber);
 
@@ -188,6 +199,10 @@ public class ChallengeScene extends BaseScene {
      */
     private void blockClicked(GameBlock gameBlock) {
         game.blockClicked(gameBlock);
+        //Updates the high score as the user exceeds it
+        if (game.getScore() > parseInt(hiScoreNumber.getText())) {
+            hiScoreNumber.setText(String.valueOf(game.getScore()));
+        }
     }
 
     /**
@@ -371,5 +386,20 @@ public class ChallengeScene extends BaseScene {
         upcomingPiece.displayPiece(game.getCurrentPiece());
         upcomingPiece.paintIndicator();
         followingPiece.displayPiece(game.getFollowingPiece());
+    }
+
+    public void getHighScore() {
+        try{
+            var reader = new BufferedReader(new FileReader("scores.txt"));
+            var hiScore = reader.readLine();
+            var score = hiScore.split(":")[1];
+            hiScoreNumber = new Text(String.format("%d", parseInt(score)));
+        } catch (FileNotFoundException e) {
+            logger.error("Scores file couldn't be found");
+            hiScoreNumber = new Text("0");
+        } catch (IOException e) {
+            logger.error("Something went wrong trying to read the scores file");
+            hiScoreNumber = new Text("0");
+        }
     }
 }

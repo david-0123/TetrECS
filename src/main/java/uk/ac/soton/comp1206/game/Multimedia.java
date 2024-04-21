@@ -12,18 +12,21 @@ import org.apache.logging.log4j.Logger;
  */
 public class Multimedia {
     private static final Logger logger = LogManager.getLogger(Game.class);
+
     /**
      * Stores the audio to be played
      */
     private static MediaPlayer audioPlayer;
+
     /**
      * Stores the background music
      */
     private static MediaPlayer musicPlayer;
+
     /**
      * Flag that determines whether audio can be played
      */
-    private static BooleanProperty audioEnabled = new SimpleBooleanProperty(true);
+    private static BooleanProperty audioEnabled = new SimpleBooleanProperty(false);
 
     /**
      * Handles and plays the given audio file
