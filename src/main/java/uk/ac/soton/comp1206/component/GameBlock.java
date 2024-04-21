@@ -26,27 +26,39 @@ public class GameBlock extends Canvas {
      * The set of colours for different pieces
      */
     public static final Color[] COLOURS = {
-            Color.TRANSPARENT,
-            Color.DEEPPINK,
-            Color.RED,
-            Color.ORANGE,
-            Color.YELLOW,
-            Color.YELLOWGREEN,
-            Color.LIME,
-            Color.GREEN,
-            Color.DARKGREEN,
-            Color.DARKTURQUOISE,
-            Color.DEEPSKYBLUE,
-            Color.AQUA,
-            Color.AQUAMARINE,
-            Color.BLUE,
-            Color.MEDIUMPURPLE,
-            Color.PURPLE
+        //region Colours
+        Color.TRANSPARENT,
+        Color.DEEPPINK,
+        Color.RED,
+        Color.ORANGE,
+        Color.YELLOW,
+        Color.YELLOWGREEN,
+        Color.LIME,
+        Color.GREEN,
+        Color.DARKGREEN,
+        Color.DARKTURQUOISE,
+        Color.DEEPSKYBLUE,
+        Color.AQUA,
+        Color.AQUAMARINE,
+        Color.BLUE,
+        Color.MEDIUMPURPLE,
+        Color.PURPLE
+        //endregion
     };
 
+    /**
+     * The GameBoard the block is a part of
+     */
     private final GameBoard gameBoard;
 
+    /**
+     * The width of the block
+     */
     private final double width;
+
+    /**
+     * The height of the block
+     */
     private final double height;
 
     /**
@@ -239,6 +251,9 @@ public class GameBlock extends Canvas {
         value.bind(input);
     }
 
+    /**
+     * Handles the animation for fading out a block when it's part of a cleared line
+     */
     public void fadeOut() {
         opacity = 1;
         AnimationTimer timer = new AnimationTimer() {
@@ -256,6 +271,9 @@ public class GameBlock extends Canvas {
         timer.start();
     }
 
+    /**
+     * Handles painting the block progressively more transparent
+     */
     private void fadePaint() {
         var gc = getGraphicsContext2D();
 
@@ -263,6 +281,10 @@ public class GameBlock extends Canvas {
         gc.fillRect(0,0,width,height);
     }
 
+    /**
+     * Stops the animation
+     * @param timer animation timer
+     */
     private void stopFade(AnimationTimer timer) {
         timer.stop();
         gameBoard.grid.set(getX(), getY(), 0);

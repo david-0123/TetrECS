@@ -14,10 +14,21 @@ import uk.ac.soton.comp1206.ui.GameWindow;
 public abstract class BaseScene {
     private static final Logger logger = LogManager.getLogger(GameWindow.class);
 
+    /**
+     * GameWindow linked to the scene
+     */
     protected final GameWindow gameWindow;
 
+    /**
+     * Root element of every scene
+     */
     protected GamePane root;
+
     protected Scene scene;
+
+    /**
+     * Holds the scene's designated name
+     */
     protected String sceneName;
 
     /**

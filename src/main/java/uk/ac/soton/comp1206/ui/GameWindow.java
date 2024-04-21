@@ -24,12 +24,23 @@ public class GameWindow {
 
     private static final Logger logger = LogManager.getLogger(GameWindow.class);
 
+    /**
+     * Width of the window
+     */
     private final int width;
+
+    /**
+     * Height of the window
+     */
     private final int height;
 
     private final Stage stage;
 
+    /**
+     * Holds the current scene
+     */
     private BaseScene currentScene;
+
     private Scene scene;
 
     final Communicator communicator;
@@ -103,7 +114,7 @@ public class GameWindow {
     }
 
     /**
-     * Setup the default settings for the stage itself (the window), such as the title and minimum width and height.
+     * Set up the default settings for the stage itself (the window), such as the title and minimum width and height.
      */
     public void setupStage() {
         stage.setTitle("TetrECS");
@@ -131,7 +142,7 @@ public class GameWindow {
     }
 
     /**
-     * Setup the default scene (an empty black scene) when no scene is loaded
+     * Set up the default scene (an empty black scene) when no scene is loaded
      */
     public void setupDefaultScene() {
         this.scene = new Scene(new Pane(),width,height, Color.BLACK);

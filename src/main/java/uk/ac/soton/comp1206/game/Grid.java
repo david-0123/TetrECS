@@ -140,6 +140,7 @@ public class Grid {
      * @param piece the game piece to be played
      * @param x the x coordinate on the grid
      * @param y the y coordinate on the grid
+     * @return true if the piece was played
      */
     public boolean playPiece(GamePiece piece, int x, int y) {
         if (canPlayPiece(piece, x, y)) {

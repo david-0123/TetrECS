@@ -23,9 +23,24 @@ public class GamePane extends StackPane {
 
     private static final Logger logger = LogManager.getLogger(GamePane.class);
 
+    /**
+     * Width of the GamePane
+     */
     private final int width;
+
+    /**
+     * Height of the GamePane
+     */
     private final int height;
+
+    /**
+     * Scalar value when resizing the window
+     */
     private double scalar = 1;
+
+    /**
+     * Determines whether the GamePane will automatically rescale
+     */
     private final boolean autoScale = true;
 
     /**

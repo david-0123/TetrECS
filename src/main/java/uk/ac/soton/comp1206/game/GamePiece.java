@@ -191,7 +191,7 @@ public class GamePiece {
     }
 
     /**
-     * Rotate this piece exactly once by rotating it's 3x3 grid
+     * Rotate this piece exactly once by rotating its 3x3 grid
      */
     public void rotate() {
         int[][] rotated = new int[blocks.length][blocks[0].length];

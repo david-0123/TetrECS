@@ -2,6 +2,7 @@ package uk.ac.soton.comp1206.scene;
 
 import static java.lang.Integer.compare;
 import static java.lang.Integer.parseInt;
+import static uk.ac.soton.comp1206.game.Multimedia.rotateLogo;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -79,6 +80,9 @@ public class ScoresScene extends BaseScene {
         checkForHiScore();
     }
 
+    /**
+     * Builds the scores scene
+     */
     public void build() {
         logger.info("Building " + this.getClass().getName());
 
@@ -98,7 +102,7 @@ public class ScoresScene extends BaseScene {
         tetrecs.setFitWidth(600);
         tetrecs.setRotate(-2.5);
 
-        MenuScene.rotateLogo(tetrecs, 5);
+        rotateLogo(tetrecs, 5);
 
         var gameOver = new Text("Game Over");
         gameOver.getStyleClass().add("bigtitle");
@@ -258,9 +262,5 @@ public class ScoresScene extends BaseScene {
                 });
             });
         } else scoresList.reveal();
-    }
-
-    public ListProperty<Pair<String, Integer>> localScoresProperty() {
-        return localScores;
     }
 }

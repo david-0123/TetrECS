@@ -1,14 +1,18 @@
 package uk.ac.soton.comp1206.game;
 
+import javafx.animation.Animation;
+import javafx.animation.RotateTransition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.Node;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * The Multimedia class handles the audio for the game
+ * The Multimedia class
  */
 public class Multimedia {
     private static final Logger logger = LogManager.getLogger(Game.class);
@@ -117,5 +121,18 @@ public class Multimedia {
             return !musicPlayer.isMute();
         }
         return false;
+    }
+
+    /**
+     * Plays an animation that continuously rotates the given node
+     * @param node node to be rotated
+     * @param angle angle of rotation
+     */
+    public static void rotateLogo(Node node, int angle) {
+        RotateTransition rt = new RotateTransition(Duration.seconds(2), node);
+        rt.setByAngle(angle);
+        rt.setCycleCount(Animation.INDEFINITE);
+        rt.setAutoReverse(true);
+        rt.play();
     }
 }

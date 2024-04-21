@@ -1,15 +1,13 @@
 package uk.ac.soton.comp1206.scene;
 
-import javafx.animation.Animation;
-import javafx.animation.RotateTransition;
+import static uk.ac.soton.comp1206.game.Multimedia.rotateLogo;
+
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
-import javafx.util.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.game.Multimedia;
@@ -109,18 +107,5 @@ public class MenuScene extends BaseScene {
     private void showInstructions(MouseEvent event) {
         Multimedia.playAudio("transition.wav");
         gameWindow.startInstructions();
-    }
-
-    /**
-     * Plays an animation that continuously rotates the given node
-     * @param node node to be rotated
-     * @param angle angle of rotation
-     */
-    public static void rotateLogo(Node node, int angle) {
-        RotateTransition rt = new RotateTransition(Duration.seconds(2), node);
-        rt.setByAngle(angle);
-        rt.setCycleCount(Animation.INDEFINITE);
-        rt.setAutoReverse(true);
-        rt.play();
     }
 }

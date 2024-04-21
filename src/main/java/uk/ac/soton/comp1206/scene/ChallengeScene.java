@@ -39,6 +39,10 @@ import uk.ac.soton.comp1206.ui.GameWindow;
 public class ChallengeScene extends BaseScene {
 
     private static final Logger logger = LogManager.getLogger(MenuScene.class);
+
+    /**
+     * Holds the game linked to the challenge scene
+     */
     protected Game game;
 
     /**
@@ -96,7 +100,7 @@ public class ChallengeScene extends BaseScene {
     }
 
     /**
-     * Builds the Challenge window
+     * Builds the Challenge scene
      */
     @Override
     public void build() {
@@ -134,7 +138,7 @@ public class ChallengeScene extends BaseScene {
 
         var livesBox = new VBox();
         livesBox.setAlignment(Pos.CENTER);
-        var livesHeading = new Text("Lives");
+        var livesHeading = new Text("Lives Left");
         var livesNumber = new Text("3");
         livesNumber.textProperty().bind(game.livesProperty().asString("%d"));
         livesHeading.getStyleClass().add("heading");
@@ -170,7 +174,7 @@ public class ChallengeScene extends BaseScene {
         upcomingHeader.getStyleClass().add("heading");
         pieceBox.getChildren().addAll(upcomingHeader,upcomingPiece,followingPiece);
 
-        infoPane.getChildren().addAll(hiScoreBox,levelBox, pieceBox);
+        infoPane.getChildren().addAll(hiScoreBox,levelBox,pieceBox);
 
         var title = new Text("Challenge Mode");
         title.getStyleClass().add("title");
@@ -388,11 +392,14 @@ public class ChallengeScene extends BaseScene {
         followingPiece.displayPiece(game.getFollowingPiece());
     }
 
+    /**
+     * Gets the highest local score and displays it in the UI
+     */
     public void getHighScore() {
         try{
             var reader = new BufferedReader(new FileReader("scores.txt"));
             var hiScore = reader.readLine();
-            var score = hiScore.split(":")[1];
+            var score = hiScore.split(":")[1]; //Name:Score
             hiScoreNumber = new Text(String.format("%d", parseInt(score)));
         } catch (FileNotFoundException e) {
             logger.error("Scores file couldn't be found");

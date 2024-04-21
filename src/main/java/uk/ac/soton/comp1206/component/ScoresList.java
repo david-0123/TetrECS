@@ -13,6 +13,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.scene.MenuScene;
 
+/**
+ * Custom UI component that holds the current high scores and displays them to the UI
+ */
 public class ScoresList extends VBox {
     private static final Logger logger = LogManager.getLogger(MenuScene.class);
 
@@ -39,22 +42,18 @@ public class ScoresList extends VBox {
     }
 
     /**
-     * Updates the UI component in the event that the list of scores changes
+     * Updates the UI component with the correct scores when the list of scores changes
      */
     private void updateUI() {
         logger.info("Updating UI ScoresList");
         getChildren().clear();
-        var counter = 1;
 
-        for (Pair<String, Integer> score : scores) {
-            if (counter < 11) {
-                var label = new Label(score.getKey() + ": " + score.getValue());
-                label.setOpacity(0);
-                label.getStyleClass().add("scorelist");
-                label.setTextFill(GameBlock.COLOURS[counter]);
-                getChildren().add(label);
-                counter++;
-            }
+        for (int i = 0; i < 10; i++) {
+            var label = new Label(scores.get(i).getKey() + ": " + scores.get(i).getValue());
+            label.setOpacity(0);
+            label.getStyleClass().add("scorelist");
+            label.setTextFill(GameBlock.COLOURS[i+1]);
+            getChildren().add(label);
         }
     }
 

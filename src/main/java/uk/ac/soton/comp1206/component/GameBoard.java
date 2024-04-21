@@ -59,6 +59,9 @@ public class GameBoard extends GridPane {
      */
     protected BlockClickedListener blockClickedListener;
 
+    /**
+     * The listener to call when a block is right-clicked
+     */
     protected RightClickedListener rightClickedListener;
 
 
@@ -80,7 +83,7 @@ public class GameBoard extends GridPane {
     }
 
     /**
-     * Create a new GameBoard with it's own internal grid, specifying the number of columns and rows, along with the
+     * Create a new GameBoard with its own internal grid, specifying the number of columns and rows, along with the
      * visual width and height.
      *
      * @param cols number of columns for internal grid
@@ -100,7 +103,7 @@ public class GameBoard extends GridPane {
     }
 
     /**
-     * Get a specific block from the GameBoard, specified by it's row and column
+     * Get a specific block from the GameBoard, specified by its row and column
      * @param x column
      * @param y row
      * @return game block at the given column and row
@@ -129,10 +132,11 @@ public class GameBoard extends GridPane {
 
     /**
      * Create a block at the given x and y position in the GameBoard
+     *
      * @param x column
      * @param y row
      */
-    protected GameBlock createBlock(int x, int y) {
+    protected void createBlock(int x, int y) {
         var blockWidth = width / cols;
         var blockHeight = height / rows;
 
@@ -156,13 +160,11 @@ public class GameBoard extends GridPane {
             block.setOnMouseEntered(e -> hoverEnter(e, block));
             block.setOnMouseExited(e -> hoverLeave(e, block));
         }
-
-        return block;
     }
 
     /**
      * Set the listener to handle an event when a block is clicked
-     * @param listener listener to add
+     * @param listener listener
      */
     public void setOnBlockClick(BlockClickedListener listener) {
         this.blockClickedListener = listener;
@@ -210,7 +212,11 @@ public class GameBoard extends GridPane {
     private void hoverLeave(MouseEvent event, GameBlock block) {
         block.paint();
     }
-    
+
+    /**
+     * Handles the fading out animation of the cleared lines
+     * @param coords coordinates of blocks to fade out
+     */
     public void fadeOut(HashSet<GameBlockCoordinate> coords) {
         for (GameBlockCoordinate coord : coords) {
             var x = coord.getX();
