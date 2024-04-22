@@ -24,6 +24,7 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -31,6 +32,7 @@ import javafx.util.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.component.ScoresList;
+import uk.ac.soton.comp1206.event.CommunicationsListener;
 import uk.ac.soton.comp1206.game.Game;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
@@ -47,14 +49,29 @@ public class ScoresScene extends BaseScene {
     private Game game;
 
     /**
-     * Holds the scores
+     * Holds the local scores
      */
     private ListProperty<Pair<String, Integer>> localScores;
 
     /**
-     * Holds the UI component displaying the scores
+     * Holds the online scores
      */
-    private ScoresList scoresList;
+    private ListProperty<Pair<String, Integer>> remoteScores;
+
+    /**
+     * Listener that handles incoming messages from the Communicator
+     */
+    private CommunicationsListener listener;
+
+    /**
+     * Holds the UI component displaying the local scores
+     */
+    private ScoresList localScoresList;
+
+    /**
+     * Holds the UI component displaying the remote scores
+     */
+    private ScoresList remoteScoresList;
 
     /**
      * Holds the file object that contains the list of scores
@@ -72,10 +89,16 @@ public class ScoresScene extends BaseScene {
         setSceneName("Scores");
         logger.info("Creating Scores scene");
 
-        localScores = new SimpleListProperty<>(FXCollections.observableArrayList());
+        remoteScores = new SimpleListProperty<>(FXCollections.observableArrayList());
+        setOnReceiveComms(this::parseOnlineScores);
+        gameWindow.getCommunicator().addListener(listener);
+        loadOnlineScores();
 
-        loadScores("scores.txt");
-        scoresList = new ScoresList(localScores);
+        localScores = new SimpleListProperty<>(FXCollections.observableArrayList());
+        loadLocalScores("scores.txt");
+
+        localScoresList = new ScoresList(localScores);
+        remoteScoresList = new ScoresList(remoteScores);
 
         checkForHiScore();
     }
@@ -109,18 +132,82 @@ public class ScoresScene extends BaseScene {
 
         var titleBox = new VBox(tetrecs, gameOver);
         titleBox.setAlignment(Pos.CENTER);
-        titleBox.setSpacing(10);
         titleBox.setPadding(new Insets(10, 0, 0, 0));
 
+        var scoresBox = new HBox();
+        scoresBox.setAlignment(Pos.CENTER);
+        scoresBox.setSpacing(200);
+        scoresBox.setPadding(new Insets(0,0,10,0));
+
+        var localBox = new VBox();
+        var localText = new Text("Local Scores");
+        localText.getStyleClass().add("heading");
+        localBox.setAlignment(Pos.CENTER);
+        localBox.getChildren().addAll(localText, localScoresList);
+
+        var remoteBox = new VBox();
+        var remoteText = new Text("Online Scores");
+        remoteText.getStyleClass().add("heading");
+        remoteBox.setAlignment(Pos.CENTER);
+        remoteBox.getChildren().addAll(remoteText, remoteScoresList);
+
+        scoresBox.getChildren().addAll(localBox, remoteBox);
+
         mainPane.setTop(titleBox);
-        mainPane.setCenter(scoresList);
+        mainPane.setCenter(scoresBox);
+    }
+
+    /**
+     * Sets the CommunicationsListener attached to the ScoresScene
+     * @param listener listener
+     */
+    public void setOnReceiveComms(CommunicationsListener listener) {
+        this.listener = listener;
+    }
+
+    /**
+     * Requests the high scores list from the Communicator
+     */
+    public void loadOnlineScores() {
+        gameWindow.getCommunicator().send("HISCORES DEFAULT");
+    }
+
+    /**
+     * Handles the scores received from the Communicator
+     * @param response remote high scores list
+     */
+    public void parseOnlineScores(String response) {
+        logger.info("Parsing online scores");
+        List<Pair<String, Integer>> loadedScores = new ArrayList<>();
+
+        var newResponse = response.replaceFirst("HISCORES ", "");
+        String[] responseArr = newResponse.split("\n");
+
+        for (String pair : responseArr) {
+            var name = pair.split(":")[0];
+            var score = pair.split(":")[1];
+
+            loadedScores.add(new Pair<>(name,parseInt(score)));
+        }
+
+        loadedScores.sort((o1, o2) -> compare(o2.getValue(), o1.getValue()));
+
+        remoteScores.set(FXCollections.observableArrayList(loadedScores));
+        logger.info("Online scores parsed");
+    }
+
+    /**
+     * Submits a new high score to the communicator
+     */
+    public void writeOnlineScore(String user, Integer score) {
+        gameWindow.getCommunicator().send(String.format("HISCORE %s:%d", user, score));
     }
 
     /**
      * Loads a set of high scores from a config file to display on the screen
      * @param filePath file path
      */
-    public void loadScores(String filePath) {
+    public void loadLocalScores(String filePath) {
         List<Pair<String, Integer>> loadedScores = new ArrayList<>();
 
         try {
@@ -161,7 +248,7 @@ public class ScoresScene extends BaseScene {
      * Writes the local scores onto a config file
      * @param filePath file path
      */
-    public void writeScores(String filePath) {
+    public void writeLocalScores(String filePath) {
         try {
             scoresFile = new File(filePath);
 
@@ -217,16 +304,20 @@ public class ScoresScene extends BaseScene {
      */
     private void checkForHiScore() {
         logger.info("Checking for high score");
-        var newHiScore = false;
+        boolean newLocalHiScore;
+        boolean newRemoteHiScore;
 
-        for (Pair<String, Integer> score : localScores) {
-            if (game.getScore() > score.getValue()) {
-                newHiScore = true;
-                break;
-            }
-        }
+        /*
+        Checks for any new high scores
+        Since the variables will be used in the runLater lambda below, they have to be effectively final
+         */
+        newLocalHiScore = localScores.stream()
+            .anyMatch(score -> game.getScore() > score.getValue());
 
-        if (newHiScore) {
+        newRemoteHiScore = remoteScores.stream()
+            .anyMatch(score -> game.getScore() > score.getValue());
+
+        if (newLocalHiScore || newRemoteHiScore) {
             // Runs the dialog box on the JavaFX Application Thread when possible
             Platform.runLater(() -> {
                 var dialog = new TextInputDialog();
@@ -254,13 +345,24 @@ public class ScoresScene extends BaseScene {
                 var result = dialog.showAndWait();
                 result.ifPresent(
                     name -> {
-                    localScores.add(new Pair<>(name, game.getScore()));
-                    localScores.sort((o1, o2) -> compare(o2.getValue(), o1.getValue()));
+                        if (newLocalHiScore) {
+                            localScores.add(new Pair<>(name, game.getScore()));
+                            localScores.sort((o1, o2) -> compare(o2.getValue(), o1.getValue()));
+                            writeLocalScores("scores.txt");
+                            localScoresList.reveal();
+                        }
 
-                    writeScores("scores.txt");
-                    scoresList.reveal();
-                });
+                        if (newRemoteHiScore) {
+                            remoteScores.add(new Pair<>(name, game.getScore()));
+                            remoteScores.sort((o1, o2) -> compare(o2.getValue(), o1.getValue()));
+                            writeOnlineScore(name, game.getScore());
+                            remoteScoresList.reveal();
+                        }
+                    });
             });
-        } else scoresList.reveal();
+        } else {
+            localScoresList.reveal();
+            remoteScoresList.reveal();
+        }
     }
 }

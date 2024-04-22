@@ -53,6 +53,9 @@ public class ScoresList extends VBox {
             label.setOpacity(0);
             label.getStyleClass().add("scorelist");
             label.setTextFill(GameBlock.COLOURS[i+1]);
+            if (scores.get(i).getKey().equalsIgnoreCase("David")) {
+                label.getStyleClass().add("myscore");
+            }
             getChildren().add(label);
         }
     }

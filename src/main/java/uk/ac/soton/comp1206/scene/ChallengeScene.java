@@ -147,7 +147,7 @@ public class ChallengeScene extends BaseScene {
 
         var infoPane = new VBox();
         infoPane.setAlignment(Pos.CENTER);
-        infoPane.setPadding(new Insets(0,10,0,0)); //Adds a right margin
+        infoPane.setPadding(new Insets(0,20,0,0)); //Adds a right margin
         infoPane.setSpacing(10);
 
         var hiScoreBox = new VBox();
@@ -182,7 +182,7 @@ public class ChallengeScene extends BaseScene {
         var topRow = new HBox(scoreBox,title,livesBox);
         topRow.setAlignment(Pos.CENTER);
         topRow.setSpacing(150);
-        topRow.setPadding(new Insets(10,0,0,0));
+        topRow.setPadding(new Insets(10,10,0,0));
 
         timerBar = new Rectangle(gameWindow.getWidth(), 30, Color.GREEN);
 
@@ -375,7 +375,6 @@ public class ChallengeScene extends BaseScene {
     private void isGameOver() {
         if (game.getLives() < 0) {
             timeline.stop();
-            game.stopGame();
             logger.info("Leaving Challenge scene");
             Multimedia.stopMusic();
             Multimedia.playMusic("menu.mp3", true);
