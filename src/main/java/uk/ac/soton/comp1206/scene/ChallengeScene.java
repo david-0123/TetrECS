@@ -381,7 +381,7 @@ public class ChallengeScene extends BaseScene {
         //Prevents -1 being shown on the screen for a split second
         if (game.getLives() - 1 < 0) livesNumber.textProperty().unbind();
 
-        if (game.getLives() < 3) {
+        if (game.getLives() < 0) {
             timeline.stop();
             logger.info("Leaving Challenge scene");
             Multimedia.stopMusic();

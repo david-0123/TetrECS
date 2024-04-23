@@ -90,12 +90,12 @@ public class ScoresScene extends BaseScene {
         setSceneName("Scores");
         logger.info("Creating Scores scene");
 
-        remoteScores = new SimpleListProperty<>(FXCollections.observableArrayList());
+        remoteScores = new SimpleListProperty<>();
         setOnReceiveComms(this::parseOnlineScores);
         gameWindow.getCommunicator().addListener(listener);
         loadOnlineScores();
 
-        localScores = new SimpleListProperty<>(FXCollections.observableArrayList());
+        localScores = new SimpleListProperty<>();
         loadLocalScores("scores.txt");
 
         localScoresList = new ScoresList(localScores);
