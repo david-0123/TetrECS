@@ -38,7 +38,6 @@ public class ScoresList extends VBox {
 
             updateUI();
         }
-
     }
 
     /**
@@ -73,7 +72,7 @@ public class ScoresList extends VBox {
             FadeTransition fadeTransition = new FadeTransition(Duration.seconds(1), label);
             fadeTransition.setToValue(1); // Set final opacity to 1
             fadeTransition.setDelay(Duration.seconds(i * 0.1)); // Delay each label's animation
-            fadeTransition.play(); // Start the animation
+            fadeTransition.play();
             label.setOpacity(1);
         }
     }

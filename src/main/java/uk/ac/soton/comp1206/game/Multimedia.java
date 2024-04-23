@@ -30,7 +30,7 @@ public class Multimedia {
     /**
      * Flag that determines whether audio can be played
      */
-    private static BooleanProperty audioEnabled = new SimpleBooleanProperty(false);
+    private static BooleanProperty audioEnabled = new SimpleBooleanProperty(true);
 
     /**
      * Handles and plays the given audio file

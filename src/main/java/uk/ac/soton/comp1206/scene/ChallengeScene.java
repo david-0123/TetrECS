@@ -81,6 +81,11 @@ public class ChallengeScene extends BaseScene {
     private Text hiScoreNumber;
 
     /**
+     * Holds the text representation of the amount of lives left
+     */
+    private Text livesNumber;
+
+    /**
      * Creates a new Single Player challenge scene
      * @param gameWindow the Game Window
      */
@@ -139,7 +144,7 @@ public class ChallengeScene extends BaseScene {
         var livesBox = new VBox();
         livesBox.setAlignment(Pos.CENTER);
         var livesHeading = new Text("Lives Left");
-        var livesNumber = new Text("3");
+        livesNumber = new Text("3");
         livesNumber.textProperty().bind(game.livesProperty().asString("%d"));
         livesHeading.getStyleClass().add("heading");
         livesNumber.getStyleClass().add("lives");
@@ -373,7 +378,10 @@ public class ChallengeScene extends BaseScene {
      * Checks if the user has run out of lives
      */
     private void isGameOver() {
-        if (game.getLives() < 0) {
+        //Prevents -1 being shown on the screen for a split second
+        if (game.getLives() - 1 < 0) livesNumber.textProperty().unbind();
+
+        if (game.getLives() < 3) {
             timeline.stop();
             logger.info("Leaving Challenge scene");
             Multimedia.stopMusic();

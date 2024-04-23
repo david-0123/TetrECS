@@ -415,7 +415,7 @@ public class Game {
         logger.info("Timer ran out");
         setLives(getLives() - 1);
         Multimedia.playAudio("lifelose.wav");
-        if (getLives() < 0) {
+        if (getLives() < 3) {
             stopGame();
         } else {
             nextPiece();

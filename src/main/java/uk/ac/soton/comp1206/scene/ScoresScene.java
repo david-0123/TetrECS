@@ -34,6 +34,7 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.component.ScoresList;
 import uk.ac.soton.comp1206.event.CommunicationsListener;
 import uk.ac.soton.comp1206.game.Game;
+import uk.ac.soton.comp1206.game.Multimedia;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
 
@@ -155,6 +156,7 @@ public class ScoresScene extends BaseScene {
 
         mainPane.setTop(titleBox);
         mainPane.setCenter(scoresBox);
+        Multimedia.playAudio("pling.wav");
     }
 
     /**
@@ -174,26 +176,29 @@ public class ScoresScene extends BaseScene {
 
     /**
      * Handles the scores received from the Communicator
-     * @param response remote high scores list
+     * @param response response from the communicator
      */
     public void parseOnlineScores(String response) {
-        logger.info("Parsing online scores");
-        List<Pair<String, Integer>> loadedScores = new ArrayList<>();
+        //Only parse the response if it's a set of high scores
+        if (response.contains("HISCORES")) {
+            logger.info("Parsing online scores");
+            List<Pair<String, Integer>> loadedScores = new ArrayList<>();
 
-        var newResponse = response.replaceFirst("HISCORES ", "");
-        String[] responseArr = newResponse.split("\n");
+            var newResponse = response.replaceFirst("HISCORES ", "");
+            String[] responseArr = newResponse.split("\n");
 
-        for (String pair : responseArr) {
-            var name = pair.split(":")[0];
-            var score = pair.split(":")[1];
+            for (String pair : responseArr) {
+                var name = pair.split(":")[0];
+                var score = pair.split(":")[1];
 
-            loadedScores.add(new Pair<>(name,parseInt(score)));
+                loadedScores.add(new Pair<>(name,parseInt(score)));
+            }
+
+            loadedScores.sort((o1, o2) -> compare(o2.getValue(), o1.getValue()));
+
+            remoteScores.set(FXCollections.observableArrayList(loadedScores));
+            logger.info("Online scores parsed");
         }
-
-        loadedScores.sort((o1, o2) -> compare(o2.getValue(), o1.getValue()));
-
-        remoteScores.set(FXCollections.observableArrayList(loadedScores));
-        logger.info("Online scores parsed");
     }
 
     /**
