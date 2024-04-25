@@ -24,6 +24,7 @@ import javafx.scene.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.event.CommunicationsListener;
+import uk.ac.soton.comp1206.game.Multimedia;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
 
@@ -47,6 +48,11 @@ public class LobbyScene extends BaseScene {
      * Holds the list of channels
      */
     private VBox channelList;
+
+    /**
+     * TextField to allow the user to enter the new channel name
+     */
+    private TextField nameInput;
 
     /**
      * Holds the outermost container for the channel name and box
@@ -113,7 +119,7 @@ public class LobbyScene extends BaseScene {
         var mainPane = new BorderPane();
         lobbyPane.getChildren().add(mainPane);
 
-        var title = new Text("Multiplayer");
+        var title = new Text("Multiplayer Lobby");
         title.getStyleClass().add("bigtitle");
         var titleBox = new VBox(title);
         titleBox.setAlignment(Pos.CENTER);
@@ -139,13 +145,16 @@ public class LobbyScene extends BaseScene {
         var channelTitle = new Text("Channel List");
         channelTitle.getStyleClass().add("heading");
 
-        var nameInput = new TextField();
+        nameInput = new TextField();
         nameInput.setVisible(false);
         nameInput.setMaxWidth(200);
         nameInput.setPromptText("Enter Channel Name...");
 
         var newButton = new Button("New Channel");
-        newButton.setOnAction(e -> newChannel(nameInput));
+        newButton.setOnAction(e -> {
+            Multimedia.playAudio("rotate.wav");
+            newChannel(nameInput);
+        });
 
         channelList = new VBox();
         channelList.setAlignment(Pos.TOP_CENTER);
@@ -155,7 +164,12 @@ public class LobbyScene extends BaseScene {
         channelScroller.getStyleClass().add("scroller");
         channelScroller.setPrefHeight(350);
 
-        channelListBox.getChildren().addAll(channelTitle, newButton, nameInput, channelScroller);
+        var channelContent = new VBox(newButton, nameInput, channelScroller);
+        channelContent.setAlignment(Pos.TOP_CENTER);
+        channelContent.setSpacing(10);
+        channelContent.getStyleClass().add("gameBox");
+
+        channelListBox.getChildren().addAll(channelTitle, channelContent);
 
         //------------------------------------------------------------------------------------------
 
@@ -207,7 +221,11 @@ public class LobbyScene extends BaseScene {
 
         var leaveButton = new Button("Leave Game");
         leaveButton.setMinWidth(90);
-        leaveButton.setOnAction(e -> exitChannel());
+        leaveButton.setOnAction(e -> {
+            Multimedia.playAudio("lifelose.wav");
+            exitChannel();
+            root.requestFocus();
+        });
         var leavePane = new StackPane(leaveButton);
 
         var buttonBox = new HBox(startPane, leavePane);
@@ -230,10 +248,21 @@ public class LobbyScene extends BaseScene {
         scene.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ESCAPE) {
                 exitChannel();
+                timer.cancel();
                 logger.info("Going back to the menu");
                 gameWindow.startMenu();
+            } else {
+                root.requestFocus();
             }
         });
+
+        scene.setOnMouseClicked(e -> {
+            if (!nameInput.getBoundsInParent().contains(e.getX(), e.getY())) {
+                nameInput.setVisible(false);
+            }
+        });
+
+        root.requestFocus();
     }
 
     /**
@@ -300,9 +329,11 @@ public class LobbyScene extends BaseScene {
                         channel.getStyleClass().add("selected");
                     }
                 }
+                messageBox.getChildren().clear();
                 currentChannelName.setText(channelName);
                 currentChannelBox.setVisible(true);
             });
+            Multimedia.playAudio("lifegain.wav");
 
             gameWindow.getCommunicator().send("LIST");
 
@@ -336,6 +367,7 @@ public class LobbyScene extends BaseScene {
                 Platform.runLater(() -> {
                     messageBox.getChildren().add(messageToSend);
                 });
+                Multimedia.playAudio("message.wav");
             }
 
         } else if (response.contains("PARTED")) {
