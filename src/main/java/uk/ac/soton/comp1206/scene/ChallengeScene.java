@@ -256,6 +256,8 @@ public class ChallengeScene extends BaseScene {
             game.swapCurrentPiece();
             displayPieces();
         } else if (event.getCode() == KeyCode.ESCAPE) {
+            game.stopGame();
+            Multimedia.playAudio("lifelose.wav");
             escape();
         }
     }
@@ -304,6 +306,7 @@ public class ChallengeScene extends BaseScene {
         logger.info("Initialising Challenge");
         game.start();
         Multimedia.stopMusic();
+        Multimedia.playAudio("lifegain.wav");
         Multimedia.playMusic("game_start.wav", "game.wav", true);
     }
 

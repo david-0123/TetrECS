@@ -34,7 +34,6 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.component.ScoresList;
 import uk.ac.soton.comp1206.event.CommunicationsListener;
 import uk.ac.soton.comp1206.game.Game;
-import uk.ac.soton.comp1206.game.Multimedia;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
 
@@ -156,7 +155,6 @@ public class ScoresScene extends BaseScene {
 
         mainPane.setTop(titleBox);
         mainPane.setCenter(scoresBox);
-        Multimedia.playAudio("pling.wav");
     }
 
     /**
