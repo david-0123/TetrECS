@@ -85,22 +85,15 @@ public class ScoresScene extends BaseScene {
      */
     public ScoresScene(GameWindow gameWindow, Game game) {
         super(gameWindow);
-        this.game = game;
-        setSceneName("Scores");
         logger.info("Creating Scores scene");
+        setOnReceiveComms(this::parseOnlineScores);
+        this.game = game;
 
         remoteScores = new SimpleListProperty<>();
-        setOnReceiveComms(this::parseOnlineScores);
-        gameWindow.getCommunicator().addListener(listener);
-        loadOnlineScores();
-
         localScores = new SimpleListProperty<>();
         loadLocalScores("scores.txt");
 
-        localScoresList = new ScoresList(localScores);
-        remoteScoresList = new ScoresList(remoteScores);
-
-        checkForHiScore();
+        setSceneName("Scores");
     }
 
     /**
@@ -108,6 +101,8 @@ public class ScoresScene extends BaseScene {
      */
     public void build() {
         logger.info("Building " + this.getClass().getName());
+        gameWindow.getCommunicator().addListener(listener);
+        loadOnlineScores();
 
         root = new GamePane(gameWindow.getWidth(),gameWindow.getHeight());
 
@@ -139,12 +134,15 @@ public class ScoresScene extends BaseScene {
         scoresBox.setSpacing(200);
         scoresBox.setPadding(new Insets(0,0,10,0));
 
+
+        localScoresList = new ScoresList(localScores);
         var localBox = new VBox();
         var localText = new Text("Local Scores");
         localText.getStyleClass().add("heading");
         localBox.setAlignment(Pos.CENTER);
         localBox.getChildren().addAll(localText, localScoresList);
 
+        remoteScoresList = new ScoresList(remoteScores);
         var remoteBox = new VBox();
         var remoteText = new Text("Online Scores");
         remoteText.getStyleClass().add("heading");
@@ -155,6 +153,8 @@ public class ScoresScene extends BaseScene {
 
         mainPane.setTop(titleBox);
         mainPane.setCenter(scoresBox);
+
+        checkForHiScore();
     }
 
     /**
