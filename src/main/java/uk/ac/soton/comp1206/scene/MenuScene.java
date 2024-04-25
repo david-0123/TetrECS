@@ -78,6 +78,7 @@ public class MenuScene extends BaseScene {
         rotateLogo(tetrecs, 20);
 
         single.setOnMouseClicked(this::startGame);
+        multi.setOnMouseClicked(this::showLobby);
         instruct.setOnMouseClicked(this::showInstructions);
         exit.setOnMouseClicked(this::exitGame);
 
@@ -107,5 +108,14 @@ public class MenuScene extends BaseScene {
     private void showInstructions(MouseEvent event) {
         Multimedia.playAudio("transition.wav");
         gameWindow.startInstructions();
+    }
+
+    /**
+     * Handles when the Multiplayer button is pressed
+     * @param event event
+     */
+    private void showLobby(MouseEvent event) {
+        Multimedia.playAudio("transition.wav");
+        gameWindow.startLobby();
     }
 }

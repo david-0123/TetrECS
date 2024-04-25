@@ -114,6 +114,13 @@ public class GameWindow {
     }
 
     /**
+     * Display the multiplayer lobby screen
+     */
+    public void startLobby() {
+        loadScene(new LobbyScene(this));
+    }
+
+    /**
      * Set up the default settings for the stage itself (the window), such as the title and minimum width and height.
      */
     public void setupStage() {

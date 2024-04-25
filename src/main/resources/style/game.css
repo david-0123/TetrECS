@@ -144,7 +144,7 @@
 .channelItem {
     -fx-fill: white;
     -fx-font-family: 'Orbitron';
-    -fx-font-size: 16px;
+    -fx-font-size: 18px;
     -fx-font-weight: 700;
     -fx-border-color: black;
     -fx-stroke: black;
@@ -191,12 +191,13 @@ TextField {
 }
 
 .playerBox {
-    -fx-font-size: 14px;
+    -fx-font-size: 16px;
     -fx-font-family: 'Orbitron';
 }
 
 .playerBox Text {
     -fx-fill: white;
+    -fx-font-weight: bold;
 }
 
 .myname {
@@ -204,7 +205,7 @@ TextField {
 }
 
 .instructions {
-    -fx-font-size: 10px;
+    -fx-font-size: 14px;
     -fx-font-family: 'Orbitron';
     -fx-fill: white;
 }
