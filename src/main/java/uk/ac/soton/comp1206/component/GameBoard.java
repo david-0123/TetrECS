@@ -157,7 +157,7 @@ public class GameBoard extends GridPane {
 
         //Trigger hoverEnter method when mouse hovers a game block on the main game board
         if (!(this instanceof PieceBoard)) {
-            block.setOnMouseEntered(e -> hoverEnter(e, block));
+            block.setOnMouseMoved(e -> hoverEnter(e, block));
             block.setOnMouseExited(e -> hoverLeave(e, block));
         }
     }
@@ -224,6 +224,14 @@ public class GameBoard extends GridPane {
 
             var block = blocks[x][y];
             block.fadeOut();
+        }
+    }
+    
+    public void paintGrid() {
+        for (int i = 0; i < cols; i++) {
+            for (int j = 0; j < rows; j++) {
+                blocks[i][j].paint();
+            }
         }
     }
 }

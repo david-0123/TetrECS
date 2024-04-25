@@ -211,6 +211,8 @@ public class GameBlock extends Canvas {
      * Method to paint a faint white layer over the block
      */
     public void paintHover() {
+        paint();
+
         var gc = getGraphicsContext2D();
 
         gc.setFill(Color.WHITE);

@@ -10,6 +10,7 @@ import java.util.HashSet;
 import javafx.animation.FillTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.input.KeyCode;
@@ -44,6 +45,16 @@ public class ChallengeScene extends BaseScene {
      * Holds the game linked to the challenge scene
      */
     protected Game game;
+
+    /**
+     * X coordinate of the current keyboard aim
+     */
+    protected int x;
+
+    /**
+     * Y coordinate of the current keyboard aim
+     */
+    protected int y;
 
     /**
      * Holds the PieceBoard representation of the next piece
@@ -102,6 +113,9 @@ public class ChallengeScene extends BaseScene {
             new KeyFrame(Duration.millis(1), e -> updateTimerBar()) //Update the timer bar every millisecond
         );
         timeline.setCycleCount(Timeline.INDEFINITE);
+
+        x = 0;
+        y = 0;
     }
 
     /**
@@ -239,26 +253,92 @@ public class ChallengeScene extends BaseScene {
 
     /**
      * Defines all the key events attached to the scene
-     * @param event key event
+     * @param e key event
      */
-    protected void keyEvents(KeyEvent event) {
-        if (event.getCode() == KeyCode.E || event.getCode() == KeyCode.C || event.getText().equals("]")) {
+    protected void keyEvents(KeyEvent e) {
+        /*
+        EventHandler that listens for the next mouse movement after a block is hover painted via keyboard
+        Once the mouse moves the block will reset, so it can be hovered over by the mouse again
+         */
+        EventHandler<MouseEvent> mouseMovedHandler = new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                board.getBlock(x,y).paint();
+
+                scene.removeEventFilter(MouseEvent.MOUSE_MOVED, this);
+            }
+        };
+
+        if (e.getCode() == KeyCode.E || e.getCode() == KeyCode.C || e.getText().equals("]")) {
             logger.info("Rotate right");
             game.rotateCurrentPiece();
             upcomingPiece.displayPiece(game.getCurrentPiece());
             upcomingPiece.paintIndicator();
-        } else if (event.getCode() == KeyCode.Q || event.getCode() == KeyCode.Z || event.getText().equals("[")) {
+
+        } else if (e.getCode() == KeyCode.Q || e.getCode() == KeyCode.Z || e.getText().equals("[")) {
             logger.info("Rotate left");
             game.rotateCurrentPiece(3);
             upcomingPiece.displayPiece(game.getCurrentPiece());
             upcomingPiece.paintIndicator();
-        } else if (event.getCode() == KeyCode.SPACE || event.getCode() == KeyCode.R) {
+
+        } else if (e.getCode() == KeyCode.SPACE || e.getCode() == KeyCode.R) {
             game.swapCurrentPiece();
             displayPieces();
-        } else if (event.getCode() == KeyCode.ESCAPE) {
+
+        } else if (e.getCode() == KeyCode.ESCAPE) {
             game.stopGame();
             Multimedia.playAudio("lifelose.wav");
             escape();
+
+        } else if (e.getCode() == KeyCode.UP || e.getCode() == KeyCode.W) {
+            board.paintGrid();
+            board.getBlock(x,y).paintHover();
+
+            if ((y - 1) >= 0) {
+                board.getBlock(x,y).paint();
+                y--;
+                board.getBlock(x,y).paintHover();
+            }
+
+            scene.addEventFilter(MouseEvent.MOUSE_MOVED, mouseMovedHandler);
+
+        } else if (e.getCode() == KeyCode.DOWN || e.getCode() == KeyCode.S) {
+            board.paintGrid();
+            board.getBlock(x,y).paintHover();
+
+            if ((y + 1) < game.getRows()) {
+                board.getBlock(x,y).paint();
+                y++;
+                board.getBlock(x,y).paintHover();
+            }
+
+            scene.addEventFilter(MouseEvent.MOUSE_MOVED, mouseMovedHandler);
+
+        } else if (e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.A) {
+            board.paintGrid();
+            board.getBlock(x,y).paintHover();
+
+            if ((x - 1) >= 0) {
+                board.getBlock(x,y).paint();
+                x--;
+                board.getBlock(x,y).paintHover();
+            }
+
+            scene.addEventFilter(MouseEvent.MOUSE_MOVED, mouseMovedHandler);
+
+        } else if (e.getCode() == KeyCode.RIGHT || e.getCode() == KeyCode.D) {
+            board.paintGrid();
+            board.getBlock(x,y).paintHover();
+
+            if ((x + 1) < game.getCols()) {
+                board.getBlock(x,y).paint();
+                x++;
+                board.getBlock(x,y).paintHover();
+            }
+
+            scene.addEventFilter(MouseEvent.MOUSE_MOVED, mouseMovedHandler);
+
+        } else if (e.getCode() == KeyCode.ENTER || e.getCode() == KeyCode.X) {
+            game.blockClicked(board.getBlock(x,y));
         }
     }
 

@@ -78,10 +78,10 @@ public class InstructionsScene extends BaseScene {
                 piece.setOpacity(0);
 
                 //Animate the reveal of the pieces
-                var ft = new FadeTransition(Duration.millis(2000), piece);
+                var ft = new FadeTransition(Duration.millis(500), piece);
                 ft.setFromValue(0);
                 ft.setToValue(1);
-                ft.setDelay(Duration.millis(count*200));
+                ft.setDelay(Duration.millis(count*100));
                 ft.play();
 
                 count++;

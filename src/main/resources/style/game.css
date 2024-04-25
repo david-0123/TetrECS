@@ -149,8 +149,13 @@
     -fx-border-color: black;
     -fx-stroke: black;
 }
+
 .channelItem.selected {
     -fx-fill: yellow;
+}
+
+.channelItem:hover {
+    -fx-fill: orange;
 }
 
 .leaderboard {
@@ -174,9 +179,19 @@
     -fx-background-color: transparent;
 }
 
+.scroller .scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.scroller .scroll-bar .increment-button,
+.scroller .scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
 .messages {
     -fx-background-color: transparent;
-    -fx-font-size: 12px;
+    -fx-font-size: 16px;
     -fx-font-family: 'Orbitron';
 }
 
