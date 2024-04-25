@@ -68,6 +68,10 @@
     -fx-effect: dropshadow(gaussian, black, 1, 1.0, 1, 1);
 }
 
+.heading.leader {
+    -fx-font-size: 16px;
+}
+
 .score {
     -fx-fill: yellow;
     -fx-font-family: 'Orbitron';

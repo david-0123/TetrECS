@@ -387,6 +387,10 @@ public class LobbyScene extends BaseScene {
                 alert.setContentText(errorMessage);
                 alert.showAndWait();
             });
+
+        } else if (response.contains("START")) {
+            timer.cancel();
+            Platform.runLater(gameWindow::startMulti);
         }
     }
 
@@ -437,8 +441,6 @@ public class LobbyScene extends BaseScene {
      * Requests to start the game
      */
     private void startGame() {
-        timer.cancel();
         gameWindow.getCommunicator().send("START");
-        gameWindow.startMulti();
     }
 }

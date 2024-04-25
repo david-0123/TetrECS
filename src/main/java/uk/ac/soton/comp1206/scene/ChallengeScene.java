@@ -6,7 +6,9 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Timer;
 import javafx.animation.FillTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -97,6 +99,11 @@ public class ChallengeScene extends BaseScene {
     protected Text livesNumber;
 
     /**
+     * Holds the list of timers in the scene
+     */
+    protected ArrayList<Timer> timerList;
+
+    /**
      * Creates a new Single Player challenge scene
      * @param gameWindow the Game Window
      */
@@ -108,6 +115,8 @@ public class ChallengeScene extends BaseScene {
         followingPiece = new PieceBoard(3,3, gameWindow.getWidth()/7, gameWindow.getHeight()/6);
         upcomingPiece.setOnMouseClicked(this::pieceClicked);
         followingPiece.setOnMouseClicked(this::swapPieces);
+
+        timerList = new ArrayList<>();
 
         timeline = new Timeline(
             new KeyFrame(Duration.millis(1), e -> updateTimerBar()) //Update the timer bar every millisecond
@@ -286,6 +295,7 @@ public class ChallengeScene extends BaseScene {
 
         } else if (e.getCode() == KeyCode.ESCAPE) {
             game.stopGame();
+            gameWindow.getCommunicator().send("DIE");
             Multimedia.playAudio("lifelose.wav");
             escape();
 
@@ -346,6 +356,10 @@ public class ChallengeScene extends BaseScene {
      * Handles leaving the challenge scene and going back to the menu
      */
     private void escape() {
+        for (Timer timer : timerList) {
+            timer.cancel();
+        }
+
         logger.info("Leaving Challenge scene");
         Multimedia.stopMusic();
         Multimedia.playMusic("menu.mp3", true);
@@ -464,7 +478,7 @@ public class ChallengeScene extends BaseScene {
         //Prevents -1 being shown on the screen for a split second
         if (game.getLives() - 1 < 0) livesNumber.textProperty().unbind();
 
-        if (game.getLives() < 0) {
+        if (game.getLives() < 3) {
             timeline.stop();
             logger.info("Leaving Challenge scene");
             Multimedia.stopMusic();

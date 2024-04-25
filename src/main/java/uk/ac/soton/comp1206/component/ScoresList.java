@@ -24,6 +24,11 @@ public class ScoresList extends VBox {
      */
     protected ListProperty<Pair<String, Integer>> scores;
 
+    /**
+     * The maximum number of items to show on the ScoresList
+     */
+    protected int maxItems;
+
     public ScoresList(ListProperty<Pair<String, Integer>> sceneScores) {
         this.setAlignment(Pos.TOP_CENTER);
         this.setSpacing(10);
@@ -31,6 +36,7 @@ public class ScoresList extends VBox {
 
         if (!sceneScores.isEmpty()) {
             scores = sceneScores;
+            maxItems = Math.min(10, scores.size());
 
             scores.addListener((ListChangeListener.Change<? extends Pair<String, Integer>> change) -> {
                 updateUI();
@@ -40,6 +46,8 @@ public class ScoresList extends VBox {
         }
     }
 
+    public ScoresList() {}
+
     /**
      * Updates the UI component with the correct scores when the list of scores changes
      */
@@ -47,11 +55,12 @@ public class ScoresList extends VBox {
         logger.info("Updating UI ScoresList");
         getChildren().clear();
 
-        for (int i = 0; i < Math.min(10, scores.size()); i++) {
+        for (int i = 0; i < maxItems; i++) {
             var label = new Label(scores.get(i).getKey() + ": " + scores.get(i).getValue());
             label.setOpacity(0);
             label.getStyleClass().add("scorelist");
-            label.setTextFill(GameBlock.COLOURS[i+1]);
+            if ((i + 1) % 15 == 0) label.setTextFill(GameBlock.COLOURS[(i + 2) % 15]);
+            else label.setTextFill(GameBlock.COLOURS[(i + 1) % 15]);
             if (scores.get(i).getKey().equalsIgnoreCase("David")) {
                 label.getStyleClass().add("myscore");
             }

@@ -1,7 +1,13 @@
 package uk.ac.soton.comp1206.scene;
 
+
+import static java.lang.Integer.compare;
+import static java.lang.Integer.parseInt;
+
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.regex.Pattern;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
@@ -22,7 +28,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.component.GameBlock;
 import uk.ac.soton.comp1206.component.GameBoard;
-import uk.ac.soton.comp1206.component.Leaderboard;
+import uk.ac.soton.comp1206.component.LeaderBoard;
+import uk.ac.soton.comp1206.event.CommunicationsListener;
+import uk.ac.soton.comp1206.game.GamePiece;
 import uk.ac.soton.comp1206.game.Multimedia;
 import uk.ac.soton.comp1206.game.MultiplayerGame;
 import uk.ac.soton.comp1206.ui.GamePane;
@@ -34,6 +42,11 @@ import uk.ac.soton.comp1206.ui.GameWindow;
 public class MultiplayerScene extends ChallengeScene {
 
     private static final Logger logger = LogManager.getLogger(MenuScene.class);
+
+    /**
+     * Listener that handles incoming messages from the Communicator
+     */
+    private CommunicationsListener listener;
 
     /**
      * Container for the messages between the players
@@ -48,12 +61,17 @@ public class MultiplayerScene extends ChallengeScene {
     /**
      * Holds the leaderboard for the current game
      */
-    private Leaderboard leaderboard;
+    private LeaderBoard leaderboard;
 
     /**
      * Holds every player's scores for the current game
      */
-    private ListProperty<Pair<String, Integer>> scores;
+    private ListProperty<Pair<Pair<String, String>, String>> playerScores;
+
+    /**
+     * Timer used to periodically request a new GamePiece from the Communicator
+     */
+    private Timer timer;
 
     /**
      * Creates a new MultiPlayer challenge scene
@@ -62,37 +80,38 @@ public class MultiplayerScene extends ChallengeScene {
      */
     public MultiplayerScene(GameWindow gameWindow) {
         super(gameWindow);
+        logger.info("Creating Multiplayer scene");
+        setListener(this::handleComms);
+
         setSceneName("Multiplayer");
-        initialiseLeaderboard();
+
+        playerScores = new SimpleListProperty<>();
+    }
+
+    public void setListener(CommunicationsListener listener) {
+        this.listener = listener;
     }
 
     public void setupGame() {
         logger.info("Starting new multiplayer challenge");
 
         game = new MultiplayerGame(5,5);
+
+        timer = new Timer();
+        timerList.add(timer);
+        timer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                gameWindow.getCommunicator().send("PIECE");
+            }
+        }, 0, 500);
+
         game.setNextPieceListener(this::upcomingPiece);
         game.setLineClearedListener(this::lineCleared);
         game.setGameLoopListener(this::timer);
     }
 
-    /**
-     * Populates the leaderboard with the players in the game
-     */
-    private void initialiseLeaderboard() {
-        scores = new SimpleListProperty<>();
-
-        List<Pair<String, Integer>> testScores = new ArrayList<>();
-
-        for (int i = 1; i < 6; i++) {
-            testScores.add(new Pair<>("Player " + i, 100));
-        }
-
-        scores.set(FXCollections.observableArrayList(testScores));
-
-        leaderboard = new Leaderboard(scores);
-    }
-
     public void initialise() {
+        logger.info("Initialising multiplayer");
         scene.setOnKeyPressed(this::keyEvents);
 
         /*
@@ -106,16 +125,25 @@ public class MultiplayerScene extends ChallengeScene {
             }
         });
 
-        logger.info("Initialising multiplayer");
-        game.start();
-        Multimedia.stopMusic();
-        Multimedia.playMusic("game_start.wav", "game.wav", true);
+        //Delays the start of the game so a few GamePieces can be populated
+        var pause = new Timer();
+        pause.schedule(new TimerTask() {
+            public void run() {
+                logger.info("Game started");
+                game.start();
+                Multimedia.stopMusic();
+                Multimedia.playMusic("game_start.wav", "game.wav", true);
+            }
+        }, 500);
     }
 
     public void build() {
         logger.info("Building " + this.getClass().getName());
+        gameWindow.getCommunicator().addListener(listener);
 
         setupGame();
+
+        gameWindow.getCommunicator().send("SCORES");
 
         root = new GamePane(gameWindow.getWidth(),gameWindow.getHeight());
 
@@ -194,7 +222,7 @@ public class MultiplayerScene extends ChallengeScene {
         messageBox.getStyleClass().add("messages");
 
         var messageScroller = new ScrollPane(messageBox);
-        messageScroller.setPrefHeight(200);
+        messageScroller.setPrefHeight(100);
         messageScroller.setFitToWidth(true);
         messageScroller.getStyleClass().add("scroller");
 
@@ -213,10 +241,24 @@ public class MultiplayerScene extends ChallengeScene {
 
         //------------------------------------------------------------------------------------------
 
-        var onlineBox = new VBox(chatBox, leaderboard);
+        var leaderText = new Text("Leaderboard (Score:Lives)");
+        leaderText.getStyleClass().add("heading");
+        leaderText.getStyleClass().add("leader");
+
+        //------------------------------------------------------------------------------------------
+
+        leaderboard = new LeaderBoard(playerScores);
+        var boardScroller = new ScrollPane(leaderboard);
+        boardScroller.setFitToWidth(true);
+        boardScroller.setPrefHeight(200);
+        boardScroller.getStyleClass().add("scroller");
+        boardScroller.setVvalue(0);
+
+        //------------------------------------------------------------------------------------------
+
+        var onlineBox = new VBox(chatBox, leaderText, boardScroller);
         onlineBox.setSpacing(10);
         onlineBox.setAlignment(Pos.CENTER);
-        leaderboard.reveal();
 
         //------------------------------------------------------------------------------------------
 
@@ -243,6 +285,42 @@ public class MultiplayerScene extends ChallengeScene {
         board.setOnRightClicked(this::blockRightClicked);
     }
 
+    private void handleComms(String response) {
+        var score = Pattern.compile("^SCORE .+$");
+        var scores = Pattern.compile("^SCORES .+$");
+        var piece = Pattern.compile("^PIECE \\d+$");
+        var message = Pattern.compile("^MSG .+$");
+
+        if (score.matcher(response).find()) {
+
+        } else if (scores.matcher(response).find()) {
+            logger.info("Handling SCORES");
+            String[] scoreArr = response.replace("SCORES ","").split("\n");
+            var loadedPlayers = new ArrayList<Pair<Pair<String, String>, String>>();
+
+            for (String player : scoreArr) {
+                String[] playerInfo = player.split(":");
+                var name = playerInfo[0];
+                var playerScore = playerInfo[1];
+                var lives = playerInfo[2];
+
+                loadedPlayers.add(new Pair<>(new Pair<>(name, playerScore), lives));
+            }
+
+            loadedPlayers.sort((o1, o2) -> compare(parseInt(o2.getKey().getValue()), parseInt(o1.getKey().getValue())));
+
+            playerScores.set(FXCollections.observableArrayList(loadedPlayers));
+
+        } else if (piece.matcher(response).find()) {
+            logger.info("Requesting PIECE");
+            var value = response.replace("PIECE ","");
+            getNextPiece(parseInt(value));
+
+        } else if (message.matcher(response).find()) {
+
+        }
+    }
+
     /**
      * Sends a chat message to the Communicator for displaying in the chat box
      * @param message message
@@ -253,5 +331,9 @@ public class MultiplayerScene extends ChallengeScene {
 
     protected void blockClicked(GameBlock gameBlock) {
         game.blockClicked(gameBlock);
+    }
+
+    public void getNextPiece(int value) {
+        ((MultiplayerGame) game).enqueuePiece(GamePiece.createPiece(value));
     }
 }
