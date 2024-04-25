@@ -48,6 +48,7 @@ public abstract class BaseScene {
                 logger.info("Escape key pressed");
                 if (getSceneName().equalsIgnoreCase("Menu")) {
                     logger.info("Shutting down");
+                    gameWindow.getCommunicator().send("QUIT");
                     gameWindow.exit();
                 }
                 logger.info("Going back to the menu");

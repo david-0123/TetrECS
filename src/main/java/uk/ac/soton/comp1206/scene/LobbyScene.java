@@ -14,6 +14,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -124,10 +125,11 @@ public class LobbyScene extends BaseScene {
         //Holds both the channel list and messages
         var multiBoxes = new HBox();
         multiBoxes.setAlignment(Pos.CENTER);
-        multiBoxes.setPadding(new Insets(50,0,0,0));
+        multiBoxes.setPadding(new Insets(50,10,10,10));
+        multiBoxes.setSpacing(5);
         mainPane.setCenter(multiBoxes);
 
-        // -----------------------------------------------------------------------------------------
+        //------------------------------------------------------------------------------------------
 
         //Holds all the UI elements relating to the channels
         var channelListBox = new VBox();
@@ -137,10 +139,6 @@ public class LobbyScene extends BaseScene {
         var channelTitle = new Text("Channel List");
         channelTitle.getStyleClass().add("heading");
 
-        channelList = new VBox();
-        channelList.setAlignment(Pos.TOP_CENTER);
-        channelList.setMinHeight(350);
-
         var nameInput = new TextField();
         nameInput.setVisible(false);
         nameInput.setMaxWidth(200);
@@ -148,15 +146,23 @@ public class LobbyScene extends BaseScene {
 
         var newButton = new Button("New Channel");
         newButton.setOnAction(e -> newChannel(nameInput));
-        channelListBox.getChildren().addAll(channelTitle, newButton, nameInput, channelList);
 
-        // -----------------------------------------------------------------------------------------
+        channelList = new VBox();
+        channelList.setAlignment(Pos.TOP_CENTER);
+
+        var channelScroller = new ScrollPane(channelList);
+        channelScroller.setFitToWidth(true);
+        channelScroller.getStyleClass().add("scroller");
+        channelScroller.setPrefHeight(350);
+
+        channelListBox.getChildren().addAll(channelTitle, newButton, nameInput, channelScroller);
+
+        //------------------------------------------------------------------------------------------
 
         //Holds the UI elements relating to the current game
         currentChannelBox = new VBox();
         currentChannelBox.setAlignment(Pos.TOP_CENTER);
         currentChannelBox.setSpacing(10);
-        currentChannelBox.setPadding(new Insets(0,10,0,0));
 
         currentChannelName = new Text();
         currentChannelName.getStyleClass().add("heading");
@@ -166,7 +172,7 @@ public class LobbyScene extends BaseScene {
         currentChannel.setSpacing(10);
         currentChannel.getStyleClass().add("gameBox");
 
-        usersList = new HBox(new Text());
+        usersList = new HBox();
         usersList.getStyleClass().add("playerBox");
         usersList.setSpacing(5);
 
@@ -176,17 +182,16 @@ public class LobbyScene extends BaseScene {
         messageBox = new VBox();
         messageBox.getStyleClass().add("messages");
 
+        messageScroller = new ScrollPane();
+        messageScroller.setPrefHeight(350);
+        messageScroller.setContent(messageBox);
+        messageScroller.setFitToWidth(true);
+        messageScroller.getStyleClass().add("scroller");
+
         //Listener that auto scrolls to the bottom of the scroll pane
         messageBox.heightProperty().addListener((observableValue, oldValue, newValue) -> {
             messageScroller.setVvalue(messageScroller.getVmax());
         });
-
-        messageScroller = new ScrollPane();
-        messageScroller.setMinHeight(200);
-        messageScroller.setMaxHeight(200);
-        messageScroller.setContent(messageBox);
-        messageScroller.setFitToWidth(true);
-        messageScroller.getStyleClass().add("scroller");
 
         var messageInput = new TextField();
         messageInput.setPromptText("Send a new message");
@@ -195,7 +200,6 @@ public class LobbyScene extends BaseScene {
             messageInput.clear();
         });
 
-        var buttonBox = new HBox();
         var startButton = new Button("Start Game");
         startButton.setMinWidth(90);
         startButton.setOnAction(e -> startGame());
@@ -206,7 +210,7 @@ public class LobbyScene extends BaseScene {
         leaveButton.setOnAction(e -> exitChannel());
         var leavePane = new StackPane(leaveButton);
 
-        buttonBox.getChildren().addAll(startPane, leavePane);
+        var buttonBox = new HBox(startPane, leavePane);
         buttonBox.setSpacing(350);
         HBox.setHgrow(startPane, Priority.ALWAYS);
         HBox.setHgrow(leavePane, Priority.ALWAYS);
@@ -220,6 +224,16 @@ public class LobbyScene extends BaseScene {
 
         multiBoxes.getChildren().addAll(channelListBox, currentChannelBox);
         currentChannelBox.setVisible(false);
+    }
+
+    public void initialise() {
+        scene.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ESCAPE) {
+                exitChannel();
+                logger.info("Going back to the menu");
+                gameWindow.startMenu();
+            }
+        });
     }
 
     /**
@@ -290,6 +304,8 @@ public class LobbyScene extends BaseScene {
                 currentChannelBox.setVisible(true);
             });
 
+            gameWindow.getCommunicator().send("LIST");
+
         } else if (response.contains("MSG")) {
             //Handle incoming message from server and display in chat box
             String[] msgArr = response.replace("MSG ","").split(":",2);
@@ -326,6 +342,7 @@ public class LobbyScene extends BaseScene {
             //Handle leaving the current channel
             currentChannelName.setText("");
             currentChannelBox.setVisible(false);
+            gameWindow.getCommunicator().send("LIST");
 
         } else if (response.contains("ERROR")) {
             //Display error dialog with error message
@@ -388,6 +405,8 @@ public class LobbyScene extends BaseScene {
      * Requests to start the game
      */
     private void startGame() {
+        timer.cancel();
         gameWindow.getCommunicator().send("START");
+        gameWindow.startMulti();
     }
 }

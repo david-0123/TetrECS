@@ -48,42 +48,42 @@ public class ChallengeScene extends BaseScene {
     /**
      * Holds the PieceBoard representation of the next piece
      */
-    private PieceBoard upcomingPiece;
+    protected PieceBoard upcomingPiece;
 
     /**
      * Holds the PieceBoard representation of the following piece
      */
-    private PieceBoard followingPiece;
+    protected PieceBoard followingPiece;
 
     /**
      * Holds the GameBoard UI element
      */
-    private GameBoard board;
+    protected GameBoard board;
 
     /**
      * Holds the UI timer
      */
-    private Rectangle timerBar;
+    protected Rectangle timerBar;
 
     /**
      * Holds the current time remaining on the timer
      */
-    private double currentTime;
+    protected double currentTime;
 
     /**
      * Holds the Timeline object the UI timer bar uses
      */
-    private Timeline timeline;
+    protected Timeline timeline;
 
     /**
      * Holds the text representation of the current high score
      */
-    private Text hiScoreNumber;
+    protected Text hiScoreNumber;
 
     /**
      * Holds the text representation of the amount of lives left
      */
-    private Text livesNumber;
+    protected Text livesNumber;
 
     /**
      * Creates a new Single Player challenge scene
@@ -143,7 +143,7 @@ public class ChallengeScene extends BaseScene {
 
         var livesBox = new VBox();
         livesBox.setAlignment(Pos.CENTER);
-        var livesHeading = new Text("Lives Left");
+        var livesHeading = new Text("Lives");
         livesNumber = new Text("3");
         livesNumber.textProperty().bind(game.livesProperty().asString("%d"));
         livesHeading.getStyleClass().add("heading");
@@ -206,7 +206,7 @@ public class ChallengeScene extends BaseScene {
      * Handles when a block is clicked
      * @param gameBlock the Game Block that was clicked
      */
-    private void blockClicked(GameBlock gameBlock) {
+    protected void blockClicked(GameBlock gameBlock) {
         game.blockClicked(gameBlock);
         //Updates the high score as the user exceeds it
         if (game.getScore() > parseInt(hiScoreNumber.getText())) {
@@ -218,7 +218,7 @@ public class ChallengeScene extends BaseScene {
      * Handles when the GameBoard is right-clicked
      * @param block block that was clicked
      */
-    private void blockRightClicked(GameBlock block) {
+    protected void blockRightClicked(GameBlock block) {
         game.rotateCurrentPiece();
         upcomingPiece.displayPiece(game.getCurrentPiece());
         upcomingPiece.paintIndicator();
@@ -241,7 +241,7 @@ public class ChallengeScene extends BaseScene {
      * Defines all the key events attached to the scene
      * @param event key event
      */
-    private void keyEvents(KeyEvent event) {
+    protected void keyEvents(KeyEvent event) {
         if (event.getCode() == KeyCode.E || event.getCode() == KeyCode.C || event.getText().equals("]")) {
             logger.info("Rotate right");
             game.rotateCurrentPiece();
@@ -312,7 +312,7 @@ public class ChallengeScene extends BaseScene {
      * @param currentPiece current piece
      * @param followPiece following piece
      */
-    private void upcomingPiece(GamePiece currentPiece, GamePiece followPiece) {
+    protected void upcomingPiece(GamePiece currentPiece, GamePiece followPiece) {
         displayPieces();
     }
 
@@ -320,14 +320,14 @@ public class ChallengeScene extends BaseScene {
      * Handles the visual fade out animation when a line is cleared
      * @param coords set of blocks to fade out
      */
-    private void lineCleared(HashSet<GameBlockCoordinate> coords) {
+    protected void lineCleared(HashSet<GameBlockCoordinate> coords) {
         board.fadeOut(coords);
     }
 
     /**
      * Method linked to the Game timer via the GameLoopListener
      */
-    private void timer() {
+    protected void timer() {
         //Stops the previous timeline before starting a new one
         if (timeline != null) {
             timeline.stop();

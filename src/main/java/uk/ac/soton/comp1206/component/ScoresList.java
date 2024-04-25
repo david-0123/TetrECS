@@ -22,7 +22,7 @@ public class ScoresList extends VBox {
     /**
      * Holds the scores to display on the UI
      */
-    private ListProperty<Pair<String, Integer>> scores;
+    protected ListProperty<Pair<String, Integer>> scores;
 
     public ScoresList(ListProperty<Pair<String, Integer>> sceneScores) {
         this.setAlignment(Pos.TOP_CENTER);
@@ -47,7 +47,7 @@ public class ScoresList extends VBox {
         logger.info("Updating UI ScoresList");
         getChildren().clear();
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < Math.min(10, scores.size()); i++) {
             var label = new Label(scores.get(i).getKey() + ": " + scores.get(i).getValue());
             label.setOpacity(0);
             label.getStyleClass().add("scorelist");
