@@ -1,5 +1,6 @@
 package uk.ac.soton.comp1206.scene;
 
+import javafx.animation.FadeTransition;
 import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -8,6 +9,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.util.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.component.PieceBoard;
@@ -70,10 +72,19 @@ public class InstructionsScene extends BaseScene {
         int count = 0;
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 3; j++) {
-              var piece = new PieceBoard(3,3,gameWindow.getWidth()/15,gameWindow.getHeight()/14);
-              piece.displayPiece(GamePiece.createPiece(count));
-              gamePieces.add(piece,i,j);
-              count++;
+                var piece = new PieceBoard(3,3,gameWindow.getWidth()/15,gameWindow.getHeight()/14);
+                piece.displayPiece(GamePiece.createPiece(count));
+                gamePieces.add(piece,i,j);
+                piece.setOpacity(0);
+
+                //Animate the reveal of the pieces
+                var ft = new FadeTransition(Duration.millis(2000), piece);
+                ft.setFromValue(0);
+                ft.setToValue(1);
+                ft.setDelay(Duration.millis(count*200));
+                ft.play();
+
+                count++;
             }
         }
 
