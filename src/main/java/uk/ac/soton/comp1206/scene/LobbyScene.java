@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Pattern;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -31,8 +32,14 @@ public class LobbyScene extends BaseScene {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
+    /**
+     * Listener that handles incoming messages from the Communicator
+     */
     private CommunicationsListener listener;
 
+    /**
+     * Timer used to periodically request the channel list from the Communicator
+     */
     private Timer timer;
 
     /**
@@ -215,10 +222,18 @@ public class LobbyScene extends BaseScene {
         currentChannelBox.setVisible(false);
     }
 
+    /**
+     * Registers the CommunicationsListener attached to the ScoresScene
+     * @param listener listener
+     */
     private void setListener(CommunicationsListener listener) {
         this.listener = listener;
     }
 
+    /**
+     * Handles various responses from the Communicator
+     * @param response response
+     */
     private void handleResponses(String response) {
         if (response.contains("CHANNELS")) {
             //Update channels list
@@ -248,7 +263,6 @@ public class LobbyScene extends BaseScene {
 
         } else if (response.contains("NICK") && response.contains(":")) {
             //Change user's nickname
-            gameWindow.getCommunicator().send("USERS");
             String[] nickArr = response.replace("NICK ","").split(":");
 
             var oldName = nickArr[0];
@@ -273,7 +287,6 @@ public class LobbyScene extends BaseScene {
                     }
                 }
                 currentChannelName.setText(channelName);
-                gameWindow.getCommunicator().send("USERS");
                 currentChannelBox.setVisible(true);
             });
 
@@ -284,12 +297,30 @@ public class LobbyScene extends BaseScene {
             var player = msgArr[0];
             var message = msgArr[1];
 
-            var messageToSend = new Text();
-            messageToSend.setText(String.format("[%s] <%s>: %s", formatter.format(LocalDateTime.now()), player, message));
+            var newName = Pattern.compile("^/nick .+$");
+            var emptyNick = Pattern.compile("^/nick$");
 
-            Platform.runLater(() -> {
-                messageBox.getChildren().add(messageToSend);
-            });
+            if (emptyNick.matcher(message).find()) {
+                //Don't allow empty nicknames
+                Platform.runLater(() -> {
+                    var info = new Alert(AlertType.WARNING);
+                    info.setTitle("Warning");
+                    info.setContentText("Cannot set nickname to empty");
+                    info.showAndWait();
+                });
+
+            } else if (newName.matcher(message).find()) {
+                //Change user's nickname
+                gameWindow.getCommunicator().send(String.format("NICK %s", message.split("k ",2)[1]));
+
+            } else {
+                var messageToSend = new Text();
+                messageToSend.setText(String.format("[%s] <%s>: %s", formatter.format(LocalDateTime.now()), player, message));
+
+                Platform.runLater(() -> {
+                    messageBox.getChildren().add(messageToSend);
+                });
+            }
 
         } else if (response.contains("PARTED")) {
             //Handle leaving the current channel
@@ -297,6 +328,7 @@ public class LobbyScene extends BaseScene {
             currentChannelBox.setVisible(false);
 
         } else if (response.contains("ERROR")) {
+            //Display error dialog with error message
             var errorMessage = response.replace("ERROR ","");
 
             Platform.runLater(() -> {
@@ -309,6 +341,10 @@ public class LobbyScene extends BaseScene {
         }
     }
 
+    /**
+     * Creates a new channel
+     * @param field TextField for typing the new channel name
+     */
     private void newChannel(TextField field) {
         field.clear();
         field.setVisible(true);
@@ -318,14 +354,25 @@ public class LobbyScene extends BaseScene {
         });
     }
 
+    /**
+     * Sends a chat message to the Comunicator
+     * @param message message
+     */
     private void sendMessage(String message) {
         gameWindow.getCommunicator().send(String.format("MSG %s", message));
     }
 
+    /**
+     * Requests to join a channel
+     * @param channel channel name
+     */
     private void joinChannel(String channel) {
         gameWindow.getCommunicator().send(String.format("JOIN %s", channel));
     }
 
+    /**
+     * Leaves the current channel
+     */
     private void exitChannel() {
         Platform.runLater(() -> {
             for (Node channel : channelList.getChildren()) {
@@ -337,11 +384,10 @@ public class LobbyScene extends BaseScene {
         gameWindow.getCommunicator().send("PART");
     }
 
+    /**
+     * Requests to start the game
+     */
     private void startGame() {
         gameWindow.getCommunicator().send("START");
     }
-
-    /*
-    TODO: Add changing nickname functionality
-     */
 }

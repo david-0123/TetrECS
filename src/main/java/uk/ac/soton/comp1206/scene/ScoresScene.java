@@ -160,7 +160,7 @@ public class ScoresScene extends BaseScene {
     }
 
     /**
-     * Sets the CommunicationsListener attached to the ScoresScene
+     * Registers the CommunicationsListener attached to the ScoresScene
      * @param listener listener
      */
     public void setOnReceiveComms(CommunicationsListener listener) {
