@@ -38,7 +38,7 @@ import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
 
 /**
- * The scores screen shown when the game ends
+ * The scores screen shown when the single player game ends
  */
 public class ScoresScene extends BaseScene {
     private static final Logger logger = LogManager.getLogger(MenuScene.class);
@@ -46,7 +46,7 @@ public class ScoresScene extends BaseScene {
     /**
      * Holds the state of the game when it ends
      */
-    private Game game;
+    protected Game game;
 
     /**
      * Holds the local scores
@@ -89,7 +89,7 @@ public class ScoresScene extends BaseScene {
         setOnReceiveComms(this::parseOnlineScores);
         this.game = game;
 
-        remoteScores = new SimpleListProperty<>();
+        remoteScores = new SimpleListProperty<>(FXCollections.observableArrayList());
         localScores = new SimpleListProperty<>();
         loadLocalScores("scores.txt");
 
@@ -169,7 +169,7 @@ public class ScoresScene extends BaseScene {
      * Requests the high scores list from the Communicator
      */
     public void loadOnlineScores() {
-        gameWindow.getCommunicator().send("HISCORES DEFAULT");
+        gameWindow.getCommunicator().send("HISCORES");
     }
 
     /**
@@ -194,8 +194,8 @@ public class ScoresScene extends BaseScene {
 
             loadedScores.sort((o1, o2) -> compare(o2.getValue(), o1.getValue()));
 
-            remoteScores.set(FXCollections.observableArrayList(loadedScores));
-            logger.info("Online scores parsed");
+            remoteScores.clear();
+            remoteScores.addAll(loadedScores);
         }
     }
 

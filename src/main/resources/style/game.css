@@ -134,7 +134,7 @@
     -fx-font-style: italic;
 }
 
-.deadscore {
+.leaderboard.deadscore {
     -fx-strikethrough: true;
 }
 
@@ -166,6 +166,10 @@
     -fx-font-size: 16px;
     -fx-font-style: italic;
     -fx-font-weight: bold;
+}
+
+.finalLeaderboard Text{
+    -fx-font-size: 32px;
 }
 
 .gameBox {

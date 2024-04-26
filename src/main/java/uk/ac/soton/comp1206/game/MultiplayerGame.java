@@ -2,6 +2,10 @@ package uk.ac.soton.comp1206.game;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.ObservableList;
+import javafx.util.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.scene.MenuScene;
@@ -14,6 +18,11 @@ public class MultiplayerGame extends Game {
      * Holds the queue of pieces to be given to players
      */
     Queue<GamePiece> pieceQueue;
+
+    /**
+     * Holds every player's scores for the current game
+     */
+    private ListProperty<Pair<Pair<String, String>, String>> playerScores = new SimpleListProperty<>();
 
     /**
      * Creates a new game with the specified rows and columns. Creates a corresponding grid model.
@@ -44,5 +53,13 @@ public class MultiplayerGame extends Game {
 
     protected GamePiece spawnPiece() {
         return dequeuePiece();
+    }
+
+    public void setPlayerScores(ObservableList<Pair<Pair<String, String>, String>> playerScores) {
+        this.playerScores.set(playerScores);
+    }
+
+    public ObservableList<Pair<Pair<String, String>, String>> getPlayerScores() {
+        return playerScores.get();
     }
 }

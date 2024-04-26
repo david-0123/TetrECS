@@ -269,7 +269,7 @@ public class ChallengeScene extends BaseScene {
         EventHandler that listens for the next mouse movement after a block is hover painted via keyboard
         Once the mouse moves the block will reset, so it can be hovered over by the mouse again
          */
-        EventHandler<MouseEvent> mouseMovedHandler = new EventHandler<MouseEvent>() {
+        EventHandler<MouseEvent> mouseMovedHandler = new EventHandler<>() {
             public void handle(MouseEvent event) {
                 board.getBlock(x,y).paint();
 
@@ -294,10 +294,10 @@ public class ChallengeScene extends BaseScene {
             displayPieces();
 
         } else if (e.getCode() == KeyCode.ESCAPE) {
-            game.stopGame();
             gameWindow.getCommunicator().send("DIE");
             Multimedia.playAudio("lifelose.wav");
-            escape();
+            quitScene();
+            gameWindow.startMenu();
 
         } else if (e.getCode() == KeyCode.UP || e.getCode() == KeyCode.W) {
             board.paintGrid();
@@ -350,21 +350,6 @@ public class ChallengeScene extends BaseScene {
         } else if (e.getCode() == KeyCode.ENTER || e.getCode() == KeyCode.X) {
             game.blockClicked(board.getBlock(x,y));
         }
-    }
-
-    /**
-     * Handles leaving the challenge scene and going back to the menu
-     */
-    private void escape() {
-        for (Timer timer : timerList) {
-            timer.cancel();
-        }
-
-        logger.info("Leaving Challenge scene");
-        Multimedia.stopMusic();
-        Multimedia.playMusic("menu.mp3", true);
-        logger.info("Going back to the menu");
-        gameWindow.startMenu();
     }
 
     /**
@@ -478,12 +463,9 @@ public class ChallengeScene extends BaseScene {
         //Prevents -1 being shown on the screen for a split second
         if (game.getLives() - 1 < 0) livesNumber.textProperty().unbind();
 
-        if (game.getLives() < 3) {
-            timeline.stop();
-            logger.info("Leaving Challenge scene");
-            Multimedia.stopMusic();
-            Multimedia.playMusic("menu.mp3", true);
-            gameWindow.startScores(game);
+        if (game.getLives() < 0) {
+            quitScene();
+            if (!(this instanceof MultiplayerScene)) gameWindow.startScores(game);
         }
     }
 
@@ -512,5 +494,17 @@ public class ChallengeScene extends BaseScene {
             logger.error("Something went wrong trying to read the scores file");
             hiScoreNumber = new Text("0");
         }
+    }
+
+    protected void quitScene() {
+        for (Timer timer : timerList) {
+            timer.cancel();
+        }
+
+        game.stopGame();
+        timeline.stop();
+        logger.info("Leaving Challenge scene");
+        Multimedia.stopMusic();
+        Multimedia.playMusic("menu.mp3", true);
     }
 }

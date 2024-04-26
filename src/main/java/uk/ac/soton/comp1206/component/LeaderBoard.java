@@ -1,9 +1,10 @@
 package uk.ac.soton.comp1206.component;
 
+import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
+import javafx.scene.text.Text;
 import javafx.util.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,9 +27,7 @@ public class LeaderBoard extends ScoresList {
             scores = sceneScores;
             maxItems = scores.size();
 
-            scores.addListener((ListChangeListener.Change<? extends Pair<Pair<String, String>, String>> change) -> {
-                updateUI();
-            });
+            scores.addListener((ListChangeListener.Change<? extends Pair<Pair<String, String>, String>> change) -> updateUI());
 
             updateUI();
         }
@@ -37,22 +36,25 @@ public class LeaderBoard extends ScoresList {
     public void reveal() {}
     
     private void updateUI() {
-        logger.info("Updating UI leaderboard");
-        getChildren().clear();
+        Platform.runLater(() -> {
+            logger.info("Updating UI leaderboard");
+            getChildren().clear();
 
-        //Pair< Pair<String, String>, String>
-        //Name (Score:Lives)
-        for (int i = 0; i < maxItems; i++) {
-            var label = new Label(scores.get(i).getKey().getKey() + " (" + scores.get(i).getKey().getValue() + ":" + scores.get(i).getValue() + ")");
-            label.getStyleClass().add("leaderboard");
-            if ((i + 1) % 15 == 0) label.setTextFill(GameBlock.COLOURS[(i + 2) % 15]);
-            else label.setTextFill(GameBlock.COLOURS[(i + 1) % 15]);
+            //Pair< Pair<String, String>, String>
+            //Name (Score:Lives)
+            for (int i = 0; i < maxItems; i++) {
+                var text = new Text(scores.get(i).getKey().getKey() + " (" + scores.get(i).getKey().getValue() + ":" + scores.get(i).getValue() + ")");
+                text.getStyleClass().add("leaderboard");
+                if (scores.get(i).getValue().equals("DEAD") || scores.get(i).getValue().equals("DEAD")) text.getStyleClass().add("deadscore");
+                if ((i + 1) % 15 == 0) text.setFill(GameBlock.COLOURS[(i + 2) % 15]);
+                else text.setFill(GameBlock.COLOURS[(i + 1) % 15]);
 
-            if (scores.get(i).getKey().getKey().equalsIgnoreCase("David")) {
-                label.getStyleClass().add("myscore");
+                if (scores.get(i).getKey().getKey().equalsIgnoreCase("David")) {
+                    text.getStyleClass().add("myscore");
+                }
+
+                getChildren().add(text);
             }
-
-            getChildren().add(label);
-        }
+        });
     }
 }

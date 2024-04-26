@@ -1,6 +1,7 @@
 package uk.ac.soton.comp1206.component;
 
 import javafx.animation.FadeTransition;
+import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
@@ -38,9 +39,7 @@ public class ScoresList extends VBox {
             scores = sceneScores;
             maxItems = Math.min(10, scores.size());
 
-            scores.addListener((ListChangeListener.Change<? extends Pair<String, Integer>> change) -> {
-                updateUI();
-            });
+            scores.addListener((ListChangeListener.Change<? extends Pair<String, Integer>> change) -> updateUI());
 
             updateUI();
         }
@@ -52,20 +51,22 @@ public class ScoresList extends VBox {
      * Updates the UI component with the correct scores when the list of scores changes
      */
     private void updateUI() {
-        logger.info("Updating UI ScoresList");
-        getChildren().clear();
+        Platform.runLater(() -> {
+            logger.info("Updating UI ScoresList");
+            getChildren().clear();
 
-        for (int i = 0; i < maxItems; i++) {
-            var label = new Label(scores.get(i).getKey() + ": " + scores.get(i).getValue());
-            label.setOpacity(0);
-            label.getStyleClass().add("scorelist");
-            if ((i + 1) % 15 == 0) label.setTextFill(GameBlock.COLOURS[(i + 2) % 15]);
-            else label.setTextFill(GameBlock.COLOURS[(i + 1) % 15]);
-            if (scores.get(i).getKey().equalsIgnoreCase("David")) {
-                label.getStyleClass().add("myscore");
+            for (int i = 0; i < maxItems; i++) {
+                var label = new Label(scores.get(i).getKey() + ": " + scores.get(i).getValue());
+                label.setOpacity(0);
+                label.getStyleClass().add("scorelist");
+                if ((i + 1) % 15 == 0) label.setTextFill(GameBlock.COLOURS[(i + 2) % 15]);
+                else label.setTextFill(GameBlock.COLOURS[(i + 1) % 15]);
+                if (scores.get(i).getKey().equalsIgnoreCase("David")) {
+                    label.getStyleClass().add("myscore");
+                }
+                getChildren().add(label);
             }
-            getChildren().add(label);
-        }
+        });
     }
 
     /**

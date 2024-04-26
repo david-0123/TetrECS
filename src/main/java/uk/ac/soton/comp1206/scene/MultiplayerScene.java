@@ -1,13 +1,15 @@
 package uk.ac.soton.comp1206.scene;
 
-
 import static java.lang.Integer.compare;
 import static java.lang.Integer.parseInt;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Pattern;
+import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
@@ -42,6 +44,8 @@ import uk.ac.soton.comp1206.ui.GameWindow;
 public class MultiplayerScene extends ChallengeScene {
 
     private static final Logger logger = LogManager.getLogger(MenuScene.class);
+
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
     /**
      * Listener that handles incoming messages from the Communicator
@@ -85,7 +89,7 @@ public class MultiplayerScene extends ChallengeScene {
 
         setSceneName("Multiplayer");
 
-        playerScores = new SimpleListProperty<>();
+        playerScores = new SimpleListProperty<>(FXCollections.observableArrayList());
     }
 
     public void setListener(CommunicationsListener listener) {
@@ -127,6 +131,7 @@ public class MultiplayerScene extends ChallengeScene {
 
         //Delays the start of the game so a few GamePieces can be populated
         var pause = new Timer();
+        timerList.add(pause);
         pause.schedule(new TimerTask() {
             public void run() {
                 logger.info("Game started");
@@ -163,6 +168,9 @@ public class MultiplayerScene extends ChallengeScene {
         var scoreHeading = new Text("Score");
         var scoreNumber = new Text("0");
         scoreNumber.textProperty().bind(game.scoreProperty().asString("%d"));
+
+        scoreNumber.textProperty().addListener((observableValue, oldValue, newValue) -> updateScore(newValue));
+
         scoreHeading.getStyleClass().add("heading");
         scoreNumber.getStyleClass().add("score");
         scoreBox.getChildren().addAll(scoreHeading,scoreNumber);
@@ -172,6 +180,9 @@ public class MultiplayerScene extends ChallengeScene {
         var livesHeading = new Text("Lives");
         livesNumber = new Text("3");
         livesNumber.textProperty().bind(game.livesProperty().asString("%d"));
+
+        livesNumber.textProperty().addListener((observableValue, oldValue, newValue) -> updateLives(newValue));
+
         livesHeading.getStyleClass().add("heading");
         livesNumber.getStyleClass().add("lives");
         livesBox.getChildren().addAll(livesHeading,livesNumber);
@@ -226,9 +237,7 @@ public class MultiplayerScene extends ChallengeScene {
         messageScroller.setFitToWidth(true);
         messageScroller.getStyleClass().add("scroller");
 
-        messageBox.heightProperty().addListener((observableValue, oldValue, newValue) -> {
-            messageScroller.setVvalue(messageScroller.getVmax());
-        });
+        messageBox.heightProperty().addListener((observableValue, oldValue, newValue) -> messageScroller.setVvalue(messageScroller.getVmax()));
 
         chatInput = new TextField();
         chatInput.setPromptText("Send a new message");
@@ -285,13 +294,30 @@ public class MultiplayerScene extends ChallengeScene {
         board.setOnRightClicked(this::blockRightClicked);
     }
 
+    /**
+     * Handles various responses from the Communicator
+     * @param response response
+     */
     private void handleComms(String response) {
         var score = Pattern.compile("^SCORE .+$");
         var scores = Pattern.compile("^SCORES .+$");
         var piece = Pattern.compile("^PIECE \\d+$");
         var message = Pattern.compile("^MSG .+$");
+        var die = Pattern.compile("^DIE .+$");
 
         if (score.matcher(response).find()) {
+            logger.info("Handling SCORE");
+            String[] scoreInfo = response.replace("SCORE ","").split(":");
+            var name = scoreInfo[0];
+            var playerScore = scoreInfo[1];
+
+            //Replace old score with new score
+            for (Pair<Pair<String, String>, String> player : playerScores) {
+                if (player.getKey().getKey().equals(name)) {
+                    Platform.runLater(() -> playerScores.set(playerScores.indexOf(player) + 1, new Pair<>(new Pair<>(player.getKey().getKey(), playerScore), player.getValue())));
+                    break;
+                }
+            }
 
         } else if (scores.matcher(response).find()) {
             logger.info("Handling SCORES");
@@ -309,7 +335,8 @@ public class MultiplayerScene extends ChallengeScene {
 
             loadedPlayers.sort((o1, o2) -> compare(parseInt(o2.getKey().getValue()), parseInt(o1.getKey().getValue())));
 
-            playerScores.set(FXCollections.observableArrayList(loadedPlayers));
+            playerScores.clear();
+            playerScores.addAll(loadedPlayers);
 
         } else if (piece.matcher(response).find()) {
             logger.info("Requesting PIECE");
@@ -317,7 +344,19 @@ public class MultiplayerScene extends ChallengeScene {
             getNextPiece(parseInt(value));
 
         } else if (message.matcher(response).find()) {
+            String[] msgArr = response.replace("MSG ","").split(":",2);
 
+            var player = msgArr[0];
+            var chat = msgArr[1];
+
+            var messageToSend = new Text();
+            messageToSend.setText(String.format("[%s] <%s>: %s", formatter.format(LocalDateTime.now()), player, chat));
+
+            Platform.runLater(() -> messageBox.getChildren().add(messageToSend));
+            Multimedia.playAudio("message.wav");
+
+        } else if (die.matcher(response).find()) {
+            gameWindow.getCommunicator().send("SCORES");
         }
     }
 
@@ -333,7 +372,34 @@ public class MultiplayerScene extends ChallengeScene {
         game.blockClicked(gameBlock);
     }
 
+    /**
+     * Adds a GamePiece to the queue
+     * @param value value of the next game piece
+     */
     public void getNextPiece(int value) {
         ((MultiplayerGame) game).enqueuePiece(GamePiece.createPiece(value));
+    }
+
+    /**
+     * Sends the player's current score to the Communicator
+     * @param score score
+     */
+    public void updateScore(String score) {
+        gameWindow.getCommunicator().send("SCORE " + score);
+    }
+
+    /**
+     * Sends the player's current lives to the Communicator
+     * @param lives lives
+     */
+    public void updateLives(String lives) {
+        gameWindow.getCommunicator().send("LIVES " + lives);
+    }
+
+    protected void quitScene() {
+        gameWindow.getCommunicator().send("DIE");
+        ((MultiplayerGame) game).setPlayerScores(playerScores);
+        super.quitScene();
+        gameWindow.startMultiScores(game);
     }
 }

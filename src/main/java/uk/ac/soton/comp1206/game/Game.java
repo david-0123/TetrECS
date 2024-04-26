@@ -264,9 +264,7 @@ public class Game {
      */
     public void score(int lines, int blocks) {
         int score = lines * blocks * 10 * getMultiplier();
-        logger.info("Previous score: {}", getScore());
         setScore(getScore() + score);
-        logger.info("New score: {}", getScore());
     }
 
     public void setScore(int score) {
@@ -414,7 +412,7 @@ public class Game {
         logger.info("Timer ran out");
         setLives(getLives() - 1);
         Multimedia.playAudio("lifelose.wav");
-        if (getLives() < 3) {
+        if (getLives() < 0) {
             stopGame();
         } else {
             nextPiece();

@@ -128,6 +128,13 @@ public class GameWindow {
     }
 
     /**
+     * Display the multiplayer scores screen
+     */
+    public void startMultiScores(Game game) {
+        loadScene(new MultiScoresScene(this, game));
+    }
+
+    /**
      * Set up the default settings for the stage itself (the window), such as the title and minimum width and height.
      */
     public void setupStage() {
