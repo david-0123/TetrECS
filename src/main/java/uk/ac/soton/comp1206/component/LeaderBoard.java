@@ -18,14 +18,14 @@ public class LeaderBoard extends ScoresList {
 
     private static final Logger logger = LogManager.getLogger(MenuScene.class);
 
-    private ListProperty<Pair<Pair<String, String>, String>> scores;
+    private ListProperty<Pair<Pair<String, String>, String>> leaderBoardScores;
 
     public LeaderBoard() {
         setAlignment(Pos.CENTER);
         setSpacing(5);
 
-        scores = new SimpleListProperty<>();
-        scores.addListener((ListChangeListener.Change<? extends Pair<Pair<String, String>, String>> change) -> updateUI());
+        leaderBoardScores = new SimpleListProperty<>();
+        leaderBoardScores.addListener((ListChangeListener.Change<? extends Pair<Pair<String, String>, String>> change) -> updateUI());
     }
 
     /**
@@ -39,7 +39,7 @@ public class LeaderBoard extends ScoresList {
             //Pair< Pair<String, String>, String >
             //Name (Score:Lives)
             
-            for (Pair<Pair<String, String>, String> player : scores) {
+            for (Pair<Pair<String, String>, String> player : leaderBoardScores) {
                 var name = player.getKey().getKey();
                 var score = player.getKey().getValue();
                 var lives = player.getValue();
@@ -51,10 +51,10 @@ public class LeaderBoard extends ScoresList {
                     text.getStyleClass().add("deadscore");
                 }
 
-                if ((scores.indexOf(player) + 1) % 15 == 0) {
-                    text.setFill(GameBlock.COLOURS[(scores.indexOf(player) + 2) % 15]);
+                if ((leaderBoardScores.indexOf(player) + 1) % 15 == 0) {
+                    text.setFill(GameBlock.COLOURS[(leaderBoardScores.indexOf(player) + 2) % 15]);
                 } else {
-                    text.setFill(GameBlock.COLOURS[(scores.indexOf(player) + 1) % 15]);
+                    text.setFill(GameBlock.COLOURS[(leaderBoardScores.indexOf(player) + 1) % 15]);
                 }
 
                 getChildren().add(text);
@@ -62,7 +62,7 @@ public class LeaderBoard extends ScoresList {
         });
     }
 
-    public ListProperty<Pair<Pair<String, String>, String>> getScores() {
-        return scores;
+    public ListProperty<Pair<Pair<String, String>, String>> getLeaderBoardScores() {
+        return leaderBoardScores;
     }
 }

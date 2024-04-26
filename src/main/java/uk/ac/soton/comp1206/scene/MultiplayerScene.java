@@ -254,7 +254,7 @@ public class MultiplayerScene extends ChallengeScene {
         //------------------------------------------------------------------------------------------
 
         leaderboard = new LeaderBoard();
-        leaderboard.getScores().bind(playerScores);
+        leaderboard.getLeaderBoardScores().bind(playerScores);
 
         var leaderText = new Text("Leaderboard (Score:Lives)");
         leaderText.getStyleClass().add("heading");

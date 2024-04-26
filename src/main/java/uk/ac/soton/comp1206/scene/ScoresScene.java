@@ -90,7 +90,7 @@ public class ScoresScene extends BaseScene {
         this.game = game;
 
         remoteScores = new SimpleListProperty<>(FXCollections.observableArrayList());
-        localScores = new SimpleListProperty<>();
+        localScores = new SimpleListProperty<>(FXCollections.observableArrayList());
         loadLocalScores("scores.txt");
 
         setSceneName("Scores");

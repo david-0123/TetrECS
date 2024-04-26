@@ -89,4 +89,8 @@ public class ScoresList extends VBox {
             }
         });
     }
+
+    public ListProperty<Pair<String, Integer>> getScores() {
+        return scores;
+    }
 }
