@@ -145,6 +145,8 @@ public class MultiplayerScene extends ChallengeScene {
     public void build() {
         logger.info("Building " + this.getClass().getName());
         gameWindow.getCommunicator().addListener(listener);
+        gameWindow.getCommunicator().send("SCORES");
+//        gameWindow.getCommunicator().addListener(message -> Platform.runLater(() -> handleComms(message)));
 
         setupGame();
 
@@ -159,7 +161,7 @@ public class MultiplayerScene extends ChallengeScene {
         var mainPane = new BorderPane();
         multiPane.getChildren().add(mainPane);
 
-        gameWindow.getCommunicator().send("SCORES");
+
 
         //------------------------------------------------------------------------------------------
 
@@ -250,13 +252,15 @@ public class MultiplayerScene extends ChallengeScene {
 
         //------------------------------------------------------------------------------------------
 
+        leaderboard = new LeaderBoard();
+        leaderboard.getScores().bind(playerScores);
+
         var leaderText = new Text("Leaderboard (Score:Lives)");
         leaderText.getStyleClass().add("heading");
         leaderText.getStyleClass().add("leader");
 
         //------------------------------------------------------------------------------------------
 
-        leaderboard = new LeaderBoard(playerScores);
         var boardScroller = new ScrollPane(leaderboard);
         boardScroller.setFitToWidth(true);
         boardScroller.setPrefHeight(200);
@@ -292,6 +296,8 @@ public class MultiplayerScene extends ChallengeScene {
 
         //Handle gameboard being right-clicked
         board.setOnRightClicked(this::blockRightClicked);
+
+
     }
 
     /**
