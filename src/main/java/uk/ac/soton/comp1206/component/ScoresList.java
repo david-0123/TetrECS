@@ -3,6 +3,7 @@ package uk.ac.soton.comp1206.component;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -25,28 +26,15 @@ public class ScoresList extends VBox {
      */
     protected ListProperty<Pair<String, Integer>> scores;
 
-    /**
-     * The maximum number of items to show on the ScoresList
-     */
-    protected int maxItems;
-
-    public ScoresList(ListProperty<Pair<String, Integer>> sceneScores) {
+    public ScoresList() {
         this.setAlignment(Pos.TOP_CENTER);
         this.setSpacing(10);
         this.setPadding(new Insets(20,0,0,0));
 
-        if (!sceneScores.isEmpty()) {
-            logger.info("Not empty");
-            scores = sceneScores;
-            maxItems = Math.min(10, scores.size());
+        scores = new SimpleListProperty<>();
 
-            scores.addListener((ListChangeListener.Change<? extends Pair<String, Integer>> change) -> updateUI());
-
-            updateUI();
-        }
+        scores.addListener((ListChangeListener.Change<? extends Pair<String, Integer>> change) -> updateUI());
     }
-
-    public ScoresList() {}
 
     /**
      * Updates the UI component with the correct scores when the list of scores changes
@@ -56,18 +44,18 @@ public class ScoresList extends VBox {
         Platform.runLater(() -> {
             getChildren().clear();
 
-            for (int i = 0; i < maxItems; i++) {
+            for (int i = 0; i < 10; i++) {
                 var label = new Text(scores.get(i).getKey() + ": " + scores.get(i).getValue());
                 label.setOpacity(0);
                 label.getStyleClass().add("scorelist");
-                if ((i + 1) % 15 == 0) label.setFill(GameBlock.COLOURS[(i + 2) % 15]);
-                else label.setFill(GameBlock.COLOURS[(i + 1) % 15]);
+                label.setFill(GameBlock.COLOURS[i+1]);
                 if (scores.get(i).getKey().equalsIgnoreCase("David")) {
                     label.getStyleClass().add("myscore");
                 }
                 getChildren().add(label);
             }
         });
+        reveal();
     }
 
     /**
@@ -90,7 +78,7 @@ public class ScoresList extends VBox {
         });
     }
 
-    public ListProperty<Pair<String, Integer>> getScores() {
+    public ListProperty<Pair<String, Integer>> scoreListProperty() {
         return scores;
     }
 }

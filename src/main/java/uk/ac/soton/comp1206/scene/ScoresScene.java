@@ -17,6 +17,7 @@ import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ButtonType;
@@ -49,24 +50,34 @@ public class ScoresScene extends BaseScene {
     protected Game game;
 
     /**
-     * Holds the local scores
-     */
-    private ListProperty<Pair<String, Integer>> localScores;
-
-    /**
-     * Holds the online scores
-     */
-    private ListProperty<Pair<String, Integer>> remoteScores;
-
-    /**
      * Listener that handles incoming messages from the Communicator
      */
     private CommunicationsListener listener;
 
     /**
+     * Holds the list of local scores
+     */
+    protected ListProperty<Pair<String, Integer>> localScores;
+
+    /**
+     * Observable wrapper linked to the local scores
+     */
+    protected ObservableList<Pair<String, Integer>> observableLocalScores;
+
+    /**
      * Holds the UI component displaying the local scores
      */
     private ScoresList localScoresList;
+
+    /**
+     * Holds the list of remote scores
+     */
+    protected ListProperty<Pair<String, Integer>> remoteScores;
+
+    /**
+     * Observable wrapper linked to the remote scores
+     */
+    protected ObservableList<Pair<String, Integer>> observableRemoteScores;
 
     /**
      * Holds the UI component displaying the remote scores
@@ -85,15 +96,28 @@ public class ScoresScene extends BaseScene {
      */
     public ScoresScene(GameWindow gameWindow, Game game) {
         super(gameWindow);
-        logger.info("Creating Scores scene");
         setOnReceiveComms(this::parseOnlineScores);
         this.game = game;
+        setSceneName("Scores");
+        logger.info("Creating Scores scene");
 
-        remoteScores = new SimpleListProperty<>(FXCollections.observableArrayList());
         localScores = new SimpleListProperty<>(FXCollections.observableArrayList());
+        ArrayList<Pair<String, Integer>> localArrayList = new ArrayList<>();
+        observableLocalScores = FXCollections.observableArrayList(localArrayList);
+        localScores.set(observableLocalScores);
+
+        localScoresList = new ScoresList();
+        localScoresList.scoreListProperty().bind(localScores);
         loadLocalScores("scores.txt");
 
-        setSceneName("Scores");
+        remoteScores = new SimpleListProperty<>(FXCollections.observableArrayList());
+        ArrayList<Pair<String, Integer>> remoteArrayList = new ArrayList<>();
+        observableRemoteScores = FXCollections.observableArrayList(remoteArrayList);
+        remoteScores.set(observableRemoteScores);
+
+        remoteScoresList = new ScoresList();
+        remoteScoresList.scoreListProperty().bind(remoteScores);
+        loadOnlineScores();
     }
 
     /**
@@ -102,7 +126,6 @@ public class ScoresScene extends BaseScene {
     public void build() {
         logger.info("Building " + this.getClass().getName());
         gameWindow.getCommunicator().addListener(listener);
-        loadOnlineScores();
 
         root = new GamePane(gameWindow.getWidth(),gameWindow.getHeight());
 
@@ -134,15 +157,12 @@ public class ScoresScene extends BaseScene {
         scoresBox.setSpacing(200);
         scoresBox.setPadding(new Insets(0,0,10,0));
 
-
-        localScoresList = new ScoresList(localScores);
         var localBox = new VBox();
         var localText = new Text("Local Scores");
         localText.getStyleClass().add("heading");
         localBox.setAlignment(Pos.CENTER);
         localBox.getChildren().addAll(localText, localScoresList);
 
-        remoteScoresList = new ScoresList(remoteScores);
         var remoteBox = new VBox();
         var remoteText = new Text("Online Scores");
         remoteText.getStyleClass().add("heading");
@@ -153,8 +173,6 @@ public class ScoresScene extends BaseScene {
 
         mainPane.setTop(titleBox);
         mainPane.setCenter(scoresBox);
-
-        checkForHiScore();
     }
 
     /**
@@ -193,8 +211,10 @@ public class ScoresScene extends BaseScene {
             }
 
             loadedScores.sort((o1, o2) -> compare(o2.getValue(), o1.getValue()));
+            observableRemoteScores.setAll(loadedScores);
 
-            remoteScores.set(FXCollections.observableArrayList(loadedScores));
+            logger.info("Finished parsing");
+            checkForHiScore();
         }
     }
 
@@ -242,8 +262,7 @@ public class ScoresScene extends BaseScene {
         }
 
         loadedScores.sort((o1, o2) -> compare(o2.getValue(), o1.getValue()));
-
-        localScores.set(FXCollections.observableArrayList(loadedScores));
+        observableLocalScores.setAll(loadedScores);
     }
 
     /**
@@ -254,6 +273,7 @@ public class ScoresScene extends BaseScene {
         try {
             scoresFile = new File(filePath);
 
+            //If new file was just created or existing file is empty
             if (scoresFile.createNewFile() || scoresFile.length() <= 0) {
                 writeDefaultScores();
             }
@@ -311,16 +331,16 @@ public class ScoresScene extends BaseScene {
 
         /*
         Checks for any new high scores
-        Since the variables will be used in the runLater lambda below, they have to be effectively final
+        Since the variables will be used in the Platform.runLater lambda below,
+        they have to be effectively final
          */
-        newLocalHiScore = localScores.stream()
-            .anyMatch(score -> game.getScore() > score.getValue());
+        newLocalHiScore = observableLocalScores.stream()
+            .anyMatch(player -> game.getScore() > player.getValue());
 
-        newRemoteHiScore = remoteScores.stream()
-            .anyMatch(score -> game.getScore() > score.getValue());
+        newRemoteHiScore = observableRemoteScores.stream()
+            .anyMatch(player -> game.getScore() > player.getValue());
 
         if (newLocalHiScore || newRemoteHiScore) {
-            // Runs the dialog box on the JavaFX Application Thread when possible
             Platform.runLater(() -> {
                 var dialog = new TextInputDialog();
                 dialog.setTitle("New High Score!");
@@ -339,33 +359,29 @@ public class ScoresScene extends BaseScene {
                 // Re-enables the buttons when there's text in the text field
                 var textField = dialog.getEditor();
                 textField.textProperty().addListener((observable, oldValue, newValue) -> {
-                      var isEmpty = newValue.trim().isEmpty();
-                      dialog.getDialogPane().lookupButton(ButtonType.CANCEL).setDisable(isEmpty);
-                      dialog.getDialogPane().lookupButton(ButtonType.OK).setDisable(isEmpty);
+                    var isEmpty = newValue.trim().isEmpty();
+                    dialog.getDialogPane().lookupButton(ButtonType.CANCEL).setDisable(isEmpty);
+                    dialog.getDialogPane().lookupButton(ButtonType.OK).setDisable(isEmpty);
                 });
 
                 var result = dialog.showAndWait();
                 result.ifPresent(
                     name -> {
                         if (newLocalHiScore) {
-                            localScores.add(new Pair<>(name, game.getScore()));
-                            localScores.sort((o1, o2) -> compare(o2.getValue(), o1.getValue()));
+                            logger.info("New local high score");
+                            observableLocalScores.add(new Pair<>(name, game.getScore()));
+                            observableLocalScores.sort((o1, o2) -> compare(o2.getValue(), o1.getValue()));
                             writeLocalScores("scores.txt");
                         }
 
                         if (newRemoteHiScore) {
-                            remoteScores.add(new Pair<>(name, game.getScore()));
-                            remoteScores.sort((o1, o2) -> compare(o2.getValue(), o1.getValue()));
+                            logger.info("New online high score");
+                            observableRemoteScores.add(new Pair<>(name, game.getScore()));
+                            observableRemoteScores.sort((o1, o2) -> compare(o2.getValue(), o1.getValue()));
                             writeOnlineScore(name, game.getScore());
                         }
-
-                        localScoresList.reveal();
-                        remoteScoresList.reveal();
                     });
             });
-        } else {
-            localScoresList.reveal();
-            remoteScoresList.reveal();
         }
     }
 }
