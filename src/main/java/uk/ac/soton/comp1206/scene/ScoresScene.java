@@ -93,6 +93,7 @@ public class ScoresScene extends BaseScene {
      * Create a new scene, passing in the GameWindow the scene will be displayed in
      *
      * @param gameWindow the game window
+     * @param game game object that just finished
      */
     public ScoresScene(GameWindow gameWindow, Game game) {
         super(gameWindow);
@@ -220,6 +221,9 @@ public class ScoresScene extends BaseScene {
 
     /**
      * Submits a new high score to the communicator
+     *
+     * @param user user's name
+     * @param score user's score
      */
     public void writeOnlineScore(String user, Integer score) {
         gameWindow.getCommunicator().send(String.format("HISCORE %s:%d", user, score));

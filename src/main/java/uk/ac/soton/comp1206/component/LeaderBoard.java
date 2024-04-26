@@ -22,6 +22,9 @@ public class LeaderBoard extends ScoresList {
      */
     private ListProperty<Pair<Pair<String, String>, String>> leaderBoardScores;
 
+    /**
+     * Creates a Leaderboard
+     */
     public LeaderBoard() {
         setAlignment(Pos.CENTER);
         setSpacing(5);
@@ -64,6 +67,10 @@ public class LeaderBoard extends ScoresList {
         });
     }
 
+    /**
+     * Gets the scores property for the leaderboard
+     * @return ListProperty containing the scores
+     */
     public ListProperty<Pair<Pair<String, String>, String>> getLeaderBoardScores() {
         return leaderBoardScores;
     }

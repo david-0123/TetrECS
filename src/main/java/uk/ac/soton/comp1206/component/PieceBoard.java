@@ -13,10 +13,25 @@ import uk.ac.soton.comp1206.game.Grid;
 public class PieceBoard extends GameBoard {
     private static final Logger logger = LogManager.getLogger(PieceBoard.class);
 
+    /**
+     * Makes a new PieceBoard for showing upcoming pieces
+     *
+     * @param grid existing grid object
+     * @param width width
+     * @param height height
+     */
     public PieceBoard(Grid grid, double width, double height) {
       super(grid, width, height);
     }
 
+    /**
+     * Makes a new PieceBoard for showing upcoming pieces
+     *
+     * @param cols number of columns
+     * @param rows number of rows
+     * @param width width
+     * @param height height
+     */
     public PieceBoard(int cols, int rows, double width, double height) {
       super(cols, rows, width, height);
     }

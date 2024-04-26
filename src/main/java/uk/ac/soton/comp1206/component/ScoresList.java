@@ -25,6 +25,9 @@ public class ScoresList extends VBox {
      */
     protected ListProperty<Pair<String, Integer>> scores;
 
+    /**
+     * Creates a new UI element to hold and display the scores
+     */
     public ScoresList() {
         this.setAlignment(Pos.TOP_CENTER);
         this.setSpacing(10);
@@ -76,6 +79,10 @@ public class ScoresList extends VBox {
         });
     }
 
+    /**
+     * Gets the scores property for the scores list
+     * @return ListProperty containing the scores
+     */
     public ListProperty<Pair<String, Integer>> scoreListProperty() {
         return scores;
     }

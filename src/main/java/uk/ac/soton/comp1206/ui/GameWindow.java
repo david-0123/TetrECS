@@ -117,6 +117,7 @@ public class GameWindow {
 
     /**
      * Display the scores screen
+     * @param game game object
      */
     public void startScores(Game game) {
         loadScene(new ScoresScene(this, game));
@@ -138,6 +139,7 @@ public class GameWindow {
 
     /**
      * Display the multiplayer scores screen
+     * @param game game object
      */
     public void startMultiScores(Game game) {
         loadScene(new MultiScoresScene(this, game));

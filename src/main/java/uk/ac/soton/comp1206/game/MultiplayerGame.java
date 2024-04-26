@@ -66,6 +66,10 @@ public class MultiplayerGame extends Game {
         this.playerScores.set(playerScores);
     }
 
+    /**
+     * Gets the scores property for the game
+     * @return ObservableList containing the scores
+     */
     public ObservableList<Pair<Pair<String, String>, String>> getPlayerScores() {
         return playerScores.get();
     }
