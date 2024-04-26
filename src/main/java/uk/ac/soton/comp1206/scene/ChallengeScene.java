@@ -41,7 +41,7 @@ import uk.ac.soton.comp1206.ui.GameWindow;
  */
 public class ChallengeScene extends BaseScene {
 
-    private static final Logger logger = LogManager.getLogger(MenuScene.class);
+    private static final Logger logger = LogManager.getLogger(ChallengeScene.class);
 
     /**
      * Holds the game linked to the challenge scene

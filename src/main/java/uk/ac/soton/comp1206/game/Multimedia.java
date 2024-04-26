@@ -15,7 +15,7 @@ import org.apache.logging.log4j.Logger;
  * The Multimedia class
  */
 public class Multimedia {
-    private static final Logger logger = LogManager.getLogger(Game.class);
+    private static final Logger logger = LogManager.getLogger(Multimedia.class);
 
     /**
      * Stores the audio to be played

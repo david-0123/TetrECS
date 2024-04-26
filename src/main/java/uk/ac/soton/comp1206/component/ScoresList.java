@@ -13,13 +13,12 @@ import javafx.util.Duration;
 import javafx.util.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import uk.ac.soton.comp1206.scene.MenuScene;
 
 /**
  * Custom UI component that holds the current high scores and displays them to the UI
  */
 public class ScoresList extends VBox {
-    private static final Logger logger = LogManager.getLogger(MenuScene.class);
+    private static final Logger logger = LogManager.getLogger(ScoresList.class);
 
     /**
      * Holds the scores to display on the UI
@@ -32,7 +31,6 @@ public class ScoresList extends VBox {
         this.setPadding(new Insets(20,0,0,0));
 
         scores = new SimpleListProperty<>();
-
         scores.addListener((ListChangeListener.Change<? extends Pair<String, Integer>> change) -> updateUI());
     }
 

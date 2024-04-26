@@ -12,7 +12,7 @@ import uk.ac.soton.comp1206.ui.GameWindow;
  * A Base Scene used in the game. Handles common functionality between all scenes.
  */
 public abstract class BaseScene {
-    private static final Logger logger = LogManager.getLogger(GameWindow.class);
+    private static final Logger logger = LogManager.getLogger(BaseScene.class);
 
     /**
      * GameWindow linked to the scene

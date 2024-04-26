@@ -9,15 +9,17 @@ import javafx.scene.text.Text;
 import javafx.util.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import uk.ac.soton.comp1206.scene.MenuScene;
 
 /**
  * Custom UI component that holds the leaderboard in a multiplayer challenge
  */
 public class LeaderBoard extends ScoresList {
 
-    private static final Logger logger = LogManager.getLogger(MenuScene.class);
+    private static final Logger logger = LogManager.getLogger(LeaderBoard.class);
 
+    /**
+     * Holds the list of scores of all the players in the game
+     */
     private ListProperty<Pair<Pair<String, String>, String>> leaderBoardScores;
 
     public LeaderBoard() {
@@ -36,7 +38,7 @@ public class LeaderBoard extends ScoresList {
         Platform.runLater(() -> {
             getChildren().clear();
 
-            //Pair< Pair<String, String>, String >
+            //Pair <Pair<String, String>, String>
             //Name (Score:Lives)
             
             for (Pair<Pair<String, String>, String> player : leaderBoardScores) {

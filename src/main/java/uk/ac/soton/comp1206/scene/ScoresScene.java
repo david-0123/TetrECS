@@ -42,7 +42,7 @@ import uk.ac.soton.comp1206.ui.GameWindow;
  * The scores screen shown when the single player game ends
  */
 public class ScoresScene extends BaseScene {
-    private static final Logger logger = LogManager.getLogger(MenuScene.class);
+    private static final Logger logger = LogManager.getLogger(ScoresScene.class);
 
     /**
      * Holds the state of the game when it ends

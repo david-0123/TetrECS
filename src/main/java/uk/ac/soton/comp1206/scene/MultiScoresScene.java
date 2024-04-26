@@ -30,7 +30,7 @@ import uk.ac.soton.comp1206.ui.GameWindow;
  */
 public class MultiScoresScene extends ScoresScene {
 
-    private static final Logger logger = LogManager.getLogger(MenuScene.class);
+    private static final Logger logger = LogManager.getLogger(MultiScoresScene.class);
 
     /**
      * Holds the scores to display on the UI
@@ -53,7 +53,8 @@ public class MultiScoresScene extends ScoresScene {
 
         finalScores = new SimpleListProperty<>(FXCollections.observableArrayList());
         populateFinalScores();
-        leaderboard = new ScoresList(finalScores);
+        leaderboard = new ScoresList();
+        leaderboard.scoreListProperty().bind(finalScores);
     }
 
     public void build() {
@@ -89,8 +90,6 @@ public class MultiScoresScene extends ScoresScene {
 
         mainPane.setTop(titleBox);
         mainPane.setCenter(leaderboard);
-
-        leaderboard.reveal();
     }
 
     /**
@@ -107,7 +106,6 @@ public class MultiScoresScene extends ScoresScene {
         }
 
         loadedScores.sort((o1, o2) -> compare(o2.getValue(), o1.getValue()));
-
         finalScores.set(FXCollections.observableArrayList(loadedScores));
     }
 }

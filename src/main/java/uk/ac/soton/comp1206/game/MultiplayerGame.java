@@ -8,14 +8,13 @@ import javafx.collections.ObservableList;
 import javafx.util.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import uk.ac.soton.comp1206.scene.MenuScene;
 
 /**
  * The MultiplayerGame extends the base Game and implements a queue that the players get their next pieces from
  */
 public class MultiplayerGame extends Game {
 
-    private static final Logger logger = LogManager.getLogger(MenuScene.class);
+    private static final Logger logger = LogManager.getLogger(MultiplayerGame.class);
 
     /**
      * Holds the queue of pieces to be given to players
@@ -25,7 +24,7 @@ public class MultiplayerGame extends Game {
     /**
      * Holds every player's scores for the current game
      */
-    private ListProperty<Pair<Pair<String, String>, String>> playerScores = new SimpleListProperty<>();
+    private ListProperty<Pair<Pair<String, String>, String>> playerScores;
 
     /**
      * Creates a new game with the specified rows and columns. Creates a corresponding grid model.
@@ -35,6 +34,7 @@ public class MultiplayerGame extends Game {
      */
     public MultiplayerGame(int cols, int rows) {
         super(cols, rows);
+        playerScores = new SimpleListProperty<>();
         pieceQueue = new LinkedList<>();
     }
 
@@ -62,7 +62,7 @@ public class MultiplayerGame extends Game {
      * Sets the list of player scores
      * @param playerScores ObservableList containing player scores
      */
-    public void setPlayerScores(ObservableList<Pair<Pair<String, String>, String>> playerScores) {
+    public void setPlayerScores(ListProperty<Pair<Pair<String, String>, String>> playerScores) {
         this.playerScores.set(playerScores);
     }
 

@@ -34,7 +34,7 @@ import uk.ac.soton.comp1206.ui.GameWindow;
  */
 public class LobbyScene extends BaseScene {
 
-    private static final Logger logger = LogManager.getLogger(MenuScene.class);
+    private static final Logger logger = LogManager.getLogger(LobbyScene.class);
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 

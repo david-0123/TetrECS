@@ -43,7 +43,7 @@ import uk.ac.soton.comp1206.ui.GameWindow;
  */
 public class MultiplayerScene extends ChallengeScene {
 
-    private static final Logger logger = LogManager.getLogger(MenuScene.class);
+    private static final Logger logger = LogManager.getLogger(MultiplayerScene.class);
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
