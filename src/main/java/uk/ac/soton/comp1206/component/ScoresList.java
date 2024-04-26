@@ -42,7 +42,7 @@ public class ScoresList extends VBox {
         Platform.runLater(() -> {
             getChildren().clear();
 
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < Math.min(10, scores.size()); i++) {
                 var label = new Text(scores.get(i).getKey() + ": " + scores.get(i).getValue());
                 label.setOpacity(0);
                 label.getStyleClass().add("scorelist");
