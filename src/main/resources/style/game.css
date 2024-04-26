@@ -121,6 +121,10 @@
     -fx-font-family: 'Orbitron';
 }
 
+.finalLeaderboard Text{
+    -fx-font-size: 32px;
+}
+
 .scoreitem {
 
 }
@@ -132,10 +136,6 @@
 .myscore {
     -fx-font-weight: 700;
     -fx-font-style: italic;
-}
-
-.leaderboard.deadscore {
-    -fx-strikethrough: true;
 }
 
 .points {
@@ -168,8 +168,10 @@
     -fx-font-weight: bold;
 }
 
-.finalLeaderboard Text{
-    -fx-font-size: 32px;
+.leaderboard.deadscore {
+    -fx-strikethrough: true;
+    -fx-fill: dark grey;
+    -fx-font-size: 14px;
 }
 
 .gameBox {

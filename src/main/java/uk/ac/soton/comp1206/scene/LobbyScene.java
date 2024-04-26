@@ -158,6 +158,7 @@ public class LobbyScene extends BaseScene {
 
         channelList = new VBox();
         channelList.setAlignment(Pos.TOP_CENTER);
+        channelList.setSpacing(5);
 
         var channelScroller = new ScrollPane(channelList);
         channelScroller.setFitToWidth(true);
@@ -279,8 +280,8 @@ public class LobbyScene extends BaseScene {
      */
     private void handleResponses(String response) {
         if (response.contains("CHANNELS")) {
-            //Update channels list
-            String[] channelArr = response.replace("CHANNELS ", "").split("\n");
+            // Update channels list
+            String[] channelArr = response.replace("CHANNELS ", "").split("\\n");
 
             Platform.runLater(() -> {
                 channelList.getChildren().clear();
@@ -391,6 +392,9 @@ public class LobbyScene extends BaseScene {
         } else if (response.contains("START")) {
             timer.cancel();
             Platform.runLater(gameWindow::startMulti);
+
+        } else if (response.contains("DIE")) {
+            gameWindow.getCommunicator().send("USERS");
         }
     }
 

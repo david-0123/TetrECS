@@ -6,8 +6,8 @@ import javafx.beans.property.ListProperty;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 import javafx.util.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -36,6 +36,7 @@ public class ScoresList extends VBox {
         this.setPadding(new Insets(20,0,0,0));
 
         if (!sceneScores.isEmpty()) {
+            logger.info("Not empty");
             scores = sceneScores;
             maxItems = Math.min(10, scores.size());
 
@@ -51,16 +52,16 @@ public class ScoresList extends VBox {
      * Updates the UI component with the correct scores when the list of scores changes
      */
     private void updateUI() {
+        logger.info("Updating UI ScoresList");
         Platform.runLater(() -> {
-            logger.info("Updating UI ScoresList");
             getChildren().clear();
 
             for (int i = 0; i < maxItems; i++) {
-                var label = new Label(scores.get(i).getKey() + ": " + scores.get(i).getValue());
+                var label = new Text(scores.get(i).getKey() + ": " + scores.get(i).getValue());
                 label.setOpacity(0);
                 label.getStyleClass().add("scorelist");
-                if ((i + 1) % 15 == 0) label.setTextFill(GameBlock.COLOURS[(i + 2) % 15]);
-                else label.setTextFill(GameBlock.COLOURS[(i + 1) % 15]);
+                if ((i + 1) % 15 == 0) label.setFill(GameBlock.COLOURS[(i + 2) % 15]);
+                else label.setFill(GameBlock.COLOURS[(i + 1) % 15]);
                 if (scores.get(i).getKey().equalsIgnoreCase("David")) {
                     label.getStyleClass().add("myscore");
                 }
@@ -74,16 +75,18 @@ public class ScoresList extends VBox {
      */
     public void reveal() {
         logger.info("Revealing scores");
-        // Iterate through each label in the VBox and apply a fade-in animation
-        for (int i = 0; i < getChildren().size(); i++) {
-            var label = (Label) getChildren().get(i);
+        Platform.runLater(() -> {
+            // Iterate through each label in the VBox and apply a fade-in animation
+            for (int i = 0; i < getChildren().size(); i++) {
+                var label = getChildren().get(i);
 
-            // Create a fade transition to gradually reveal the label
-            FadeTransition fadeTransition = new FadeTransition(Duration.seconds(1), label);
-            fadeTransition.setToValue(1); // Set final opacity to 1
-            fadeTransition.setDelay(Duration.seconds(i * 0.1)); // Delay each label's animation
-            fadeTransition.play();
-            label.setOpacity(1);
-        }
+                // Create a fade transition to gradually reveal the label
+                FadeTransition fadeTransition = new FadeTransition(Duration.seconds(1), label);
+                fadeTransition.setToValue(1); // Set final opacity to 1
+                fadeTransition.setDelay(Duration.seconds(i * 0.1)); // Delay each label's animation
+                fadeTransition.play();
+                label.setOpacity(1);
+            }
+        });
     }
 }

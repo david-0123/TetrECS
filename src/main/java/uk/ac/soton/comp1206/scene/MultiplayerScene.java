@@ -148,8 +148,6 @@ public class MultiplayerScene extends ChallengeScene {
 
         setupGame();
 
-        gameWindow.getCommunicator().send("SCORES");
-
         root = new GamePane(gameWindow.getWidth(),gameWindow.getHeight());
 
         var multiPane = new StackPane();
@@ -160,6 +158,8 @@ public class MultiplayerScene extends ChallengeScene {
 
         var mainPane = new BorderPane();
         multiPane.getChildren().add(mainPane);
+
+        gameWindow.getCommunicator().send("SCORES");
 
         //------------------------------------------------------------------------------------------
 
@@ -300,7 +300,7 @@ public class MultiplayerScene extends ChallengeScene {
      */
     private void handleComms(String response) {
         var score = Pattern.compile("^SCORE .+$");
-        var scores = Pattern.compile("^SCORES .+$");
+        var scores = Pattern.compile("^SCORES .+$", Pattern.DOTALL);
         var piece = Pattern.compile("^PIECE \\d+$");
         var message = Pattern.compile("^MSG .+$");
         var die = Pattern.compile("^DIE .+$");
@@ -314,7 +314,7 @@ public class MultiplayerScene extends ChallengeScene {
             //Replace old score with new score
             for (Pair<Pair<String, String>, String> player : playerScores) {
                 if (player.getKey().getKey().equals(name)) {
-                    Platform.runLater(() -> playerScores.set(playerScores.indexOf(player) + 1, new Pair<>(new Pair<>(player.getKey().getKey(), playerScore), player.getValue())));
+                    playerScores.set(playerScores.indexOf(player), new Pair<>(new Pair<>(player.getKey().getKey(), playerScore), player.getValue()));
                     break;
                 }
             }
@@ -335,8 +335,12 @@ public class MultiplayerScene extends ChallengeScene {
 
             loadedPlayers.sort((o1, o2) -> compare(parseInt(o2.getKey().getValue()), parseInt(o1.getKey().getValue())));
 
-            playerScores.clear();
-            playerScores.addAll(loadedPlayers);
+            if (playerScores.isEmpty()) {
+                playerScores.set(FXCollections.observableArrayList(loadedPlayers));
+            } else {
+                playerScores.clear();
+                playerScores.addAll(FXCollections.observableArrayList(loadedPlayers));
+            }
 
         } else if (piece.matcher(response).find()) {
             logger.info("Requesting PIECE");

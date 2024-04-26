@@ -194,8 +194,7 @@ public class ScoresScene extends BaseScene {
 
             loadedScores.sort((o1, o2) -> compare(o2.getValue(), o1.getValue()));
 
-            remoteScores.clear();
-            remoteScores.addAll(loadedScores);
+            remoteScores.set(FXCollections.observableArrayList(loadedScores));
         }
     }
 
@@ -352,15 +351,16 @@ public class ScoresScene extends BaseScene {
                             localScores.add(new Pair<>(name, game.getScore()));
                             localScores.sort((o1, o2) -> compare(o2.getValue(), o1.getValue()));
                             writeLocalScores("scores.txt");
-                            localScoresList.reveal();
                         }
 
                         if (newRemoteHiScore) {
                             remoteScores.add(new Pair<>(name, game.getScore()));
                             remoteScores.sort((o1, o2) -> compare(o2.getValue(), o1.getValue()));
                             writeOnlineScore(name, game.getScore());
-                            remoteScoresList.reveal();
                         }
+
+                        localScoresList.reveal();
+                        remoteScoresList.reveal();
                     });
             });
         } else {

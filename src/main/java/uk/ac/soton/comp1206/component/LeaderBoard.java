@@ -32,12 +32,10 @@ public class LeaderBoard extends ScoresList {
             updateUI();
         }
     }
-
-    public void reveal() {}
     
     private void updateUI() {
+        logger.info("Updating UI leaderboard");
         Platform.runLater(() -> {
-            logger.info("Updating UI leaderboard");
             getChildren().clear();
 
             //Pair< Pair<String, String>, String>
