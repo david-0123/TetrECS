@@ -93,6 +93,9 @@ public class MultiScoresScene extends ScoresScene {
         leaderboard.reveal();
     }
 
+    /**
+     * Loads the final scores from the multiplayer game
+     */
     private void populateFinalScores() {
         ArrayList<Pair<String, Integer>> loadedScores = new ArrayList<>();
 

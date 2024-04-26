@@ -267,10 +267,18 @@ public class Game {
         setScore(getScore() + score);
     }
 
+    /**
+     * Sets the user's score
+     * @param score score
+     */
     public void setScore(int score) {
         this.score.set(score);
     }
 
+    /**
+     * Gets the user's score
+     * @return the score
+     */
     public int getScore() {
         return score.get();
     }
@@ -289,10 +297,18 @@ public class Game {
         setLevel(newLevel);
     }
 
+    /**
+     * Sets the user's current level
+     * @param level level
+     */
     public void setLevel(int level) {
         this.level.set(level);
     }
 
+    /**
+     * Gets the user's current level
+     * @return the level
+     */
     public int getLevel() {
         return level.get();
     }
@@ -305,10 +321,18 @@ public class Game {
         return lives;
     }
 
+    /**
+     * Sets the user's remaining lives
+     * @param lives lives
+     */
     public void setLives(int lives) {
         this.lives.set(lives);
     }
 
+    /**
+     * Gets the user's remaining lives
+     * @return lives
+     */
     public int getLives() {
         return lives.get();
     }
@@ -325,10 +349,18 @@ public class Game {
         }
     }
 
+    /**
+     * Sets the current multiplier
+     * @param multiplier multiplier
+     */
     public void setMultiplier(int multiplier) {
         this.multiplier.set(multiplier);
     }
 
+    /**
+     * Gets the current multiplier
+     * @return the multiplier
+     */
     public int getMultiplier() {
         return multiplier.get();
     }
@@ -374,14 +406,26 @@ public class Game {
         currentPiece.rotate(rotations);
     }
 
+    /**
+     * Gets the current piece
+     * @return the current game piece
+     */
     public GamePiece getCurrentPiece() {
         return currentPiece;
     }
 
+    /**
+     * Gets the following piece
+     * @return the following game piece
+     */
     public GamePiece getFollowingPiece() {
         return followingPiece;
     }
 
+    /**
+     * Calculates the length of the game timer
+     * @return timer length
+     */
     public double getTimerDelay() {
         return Math.max(2500, 12000-(500*getLevel()));
     }

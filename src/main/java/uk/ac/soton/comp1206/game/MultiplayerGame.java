@@ -10,6 +10,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.scene.MenuScene;
 
+/**
+ * The MultiplayerGame extends the base Game and implements a queue that the players get their next pieces from
+ */
 public class MultiplayerGame extends Game {
 
     private static final Logger logger = LogManager.getLogger(MenuScene.class);
@@ -55,6 +58,10 @@ public class MultiplayerGame extends Game {
         return dequeuePiece();
     }
 
+    /**
+     * Sets the list of player scores
+     * @param playerScores ObservableList containing player scores
+     */
     public void setPlayerScores(ObservableList<Pair<Pair<String, String>, String>> playerScores) {
         this.playerScores.set(playerScores);
     }

@@ -34,6 +34,9 @@ public class GameWindow {
      */
     private final int height;
 
+    /**
+     * The current stage
+     */
     private final Stage stage;
 
     /**
@@ -41,8 +44,14 @@ public class GameWindow {
      */
     private BaseScene currentScene;
 
+    /**
+     * The scene
+     */
     private Scene scene;
 
+    /**
+     * The Communicator
+     */
     final Communicator communicator;
 
     /**
@@ -74,7 +83,7 @@ public class GameWindow {
     }
 
     /**
-     * Setup the font and any other resources we need
+     * Set up the font and any other resources we need
      */
     private void setupResources() {
         logger.info("Loading resources");

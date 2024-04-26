@@ -24,6 +24,9 @@ public abstract class BaseScene {
      */
     protected GamePane root;
 
+    /**
+     * Holds the current scene
+     */
     protected Scene scene;
 
     /**

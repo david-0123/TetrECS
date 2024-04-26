@@ -28,6 +28,10 @@ import uk.ac.soton.comp1206.game.Multimedia;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
 
+/**
+ * The LobbyScene is the gateway to the multiplayer challenge. Players can create/join channels and send messages within those channels.
+ * The host of each channel can start a new multiplayer game
+ */
 public class LobbyScene extends BaseScene {
 
     private static final Logger logger = LogManager.getLogger(MenuScene.class);

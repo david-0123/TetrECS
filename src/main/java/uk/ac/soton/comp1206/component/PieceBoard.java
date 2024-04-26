@@ -34,7 +34,7 @@ public class PieceBoard extends GameBoard {
             grid.set(x, y, piece.getValue());
           }
         }
-       }
+      }
     }
 
     /**

@@ -27,13 +27,16 @@ public class LeaderBoard extends ScoresList {
         scores = new SimpleListProperty<>();
         scores.addListener((ListChangeListener.Change<? extends Pair<Pair<String, String>, String>> change) -> updateUI());
     }
-    
+
+    /**
+     * Update the UI rendering of the leaderboard
+     */
     private void updateUI() {
         logger.info("Updating UI leaderboard");
         Platform.runLater(() -> {
             getChildren().clear();
 
-            //Pair< Pair<String, String>, String>
+            //Pair< Pair<String, String>, String >
             //Name (Score:Lives)
             
             for (Pair<Pair<String, String>, String> player : scores) {

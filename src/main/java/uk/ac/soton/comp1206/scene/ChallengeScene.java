@@ -496,6 +496,9 @@ public class ChallengeScene extends BaseScene {
         }
     }
 
+    /**
+     * Exits the scene
+     */
     protected void quitScene() {
         for (Timer timer : timerList) {
             timer.cancel();

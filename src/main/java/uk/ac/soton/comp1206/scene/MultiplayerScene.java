@@ -92,6 +92,10 @@ public class MultiplayerScene extends ChallengeScene {
         playerScores = new SimpleListProperty<>(FXCollections.observableArrayList());
     }
 
+    /**
+     * Registers the CommunicationsListener attached to the scene
+     * @param listener listener
+     */
     public void setListener(CommunicationsListener listener) {
         this.listener = listener;
     }
@@ -146,7 +150,6 @@ public class MultiplayerScene extends ChallengeScene {
         logger.info("Building " + this.getClass().getName());
         gameWindow.getCommunicator().addListener(listener);
         gameWindow.getCommunicator().send("SCORES");
-//        gameWindow.getCommunicator().addListener(message -> Platform.runLater(() -> handleComms(message)));
 
         setupGame();
 
@@ -160,8 +163,6 @@ public class MultiplayerScene extends ChallengeScene {
 
         var mainPane = new BorderPane();
         multiPane.getChildren().add(mainPane);
-
-
 
         //------------------------------------------------------------------------------------------
 
@@ -354,6 +355,7 @@ public class MultiplayerScene extends ChallengeScene {
             getNextPiece(parseInt(value));
 
         } else if (message.matcher(response).find()) {
+            logger.info("Handling MESSAGE");
             String[] msgArr = response.replace("MSG ","").split(":",2);
 
             var player = msgArr[0];

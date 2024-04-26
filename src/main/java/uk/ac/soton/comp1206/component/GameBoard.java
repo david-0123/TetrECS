@@ -226,7 +226,10 @@ public class GameBoard extends GridPane {
             block.fadeOut();
         }
     }
-    
+
+    /**
+     * Paints the whole GameBoard
+     */
     public void paintGrid() {
         for (int i = 0; i < cols; i++) {
             for (int j = 0; j < rows; j++) {
